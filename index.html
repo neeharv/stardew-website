@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Under Construction - Stardew Labs</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                background: linear-gradient(
+                    to bottom,
+                    #0a0a1a 0%,
+                    #1a1a2e 40%,
+                    #2a2a2a 70%,
+                    #2a2a2a 100%
+                );
+                color: white;
+                font-family:
+                    monospace,
+                    -apple-system,
+                    BlinkMacSystemFont,
+                    "Segoe UI",
+                    Arial,
+                    sans-serif;
+                min-height: 90vh;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .hero {
+                flex: 1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 40px 20px;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .stars-container {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+            }
+
+            .star {
+                position: absolute;
+                width: 3px;
+                height: 3px;
+                background: rgba(255, 255, 255, 0.8);
+                border-radius: 50%;
+                opacity: 0;
+                box-shadow: 0 0 2px rgba(255, 255, 255, 0.3);
+            }
+
+            .star::after {
+                content: "";
+                position: absolute;
+                top: 50%;
+                left: -60px;
+                width: 50px;
+                height: 1px;
+                background: linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.1) 40%,
+                    rgba(255, 255, 255, 0.2) 80%,
+                    transparent 95%
+                );
+                transform: translateY(-50%);
+            }
+
+            .logo-container {
+                text-align: center;
+                max-width: 1200px;
+                width: 100%;
+                position: relative;
+                z-index: 1;
+            }
+
+            .logo-text {
+                font-size: clamp(60px, 15vw, 180px);
+                font-weight: 900;
+                letter-spacing: 0.02em;
+                line-height: 0.9;
+                display: block;
+            }
+
+            .content {
+                background-color: transparent;
+                padding: 40px 20px 60px;
+            }
+
+            .content-wrapper {
+                max-width: 1200px;
+                margin: 0 auto;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 40px;
+                align-items: start;
+            }
+
+            .right-content p {
+                font-family: monospace;
+                font-size: clamp(18px, 2.5vw, 24px);
+                line-height: 1.6;
+            }
+
+            .contact {
+                font-size: 16px;
+                line-height: 1.8;
+                margin-top: 30px;
+            }
+
+            .contact strong {
+                display: block;
+                margin-bottom: 5px;
+            }
+
+            .contact a {
+                color: white;
+                text-decoration: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+                transition: border-color 0.3s;
+            }
+
+            .contact a:hover {
+                border-bottom-color: white;
+            }
+
+            @media (max-width: 768px) {
+                .content-wrapper {
+                    grid-template-columns: 1fr;
+                    gap: 40px;
+                }
+
+                .logo-text {
+                    letter-spacing: 0;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="hero">
+            <div class="stars-container" id="starsContainer"></div>
+            <div class="logo-container">
+                <div class="logo-text">STARDEW LABS</div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="content-wrapper">
+                <div class="right-content">
+                    <p>
+                        Ignition is imminent. We (Neehar + Tara) are cooking up
+                        something new – watch this space!
+                    </p>
+                    <div class="contact">
+                        <strong>In the meantime, reach us at:</strong>
+                        <a href="mailto:hello@stardew.work"
+                            >hello@stardew.work</a
+                        >
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            const starsContainer = document.getElementById("starsContainer");
+            let isShowerActive = false;
+
+            function createShootingStar(baseAngle = null) {
+                const star = document.createElement("div");
+                star.className = "star";
+
+                // Truly random starting position - can start anywhere including edges
+                const startX = Math.random() * 120 - 10; // -10% to 110%
+                const startY = Math.random() * 120 - 10; // -10% to 110%
+                star.style.left = startX + "%";
+                star.style.top = startY + "%";
+
+                // Bias towards horizontal directions
+                // If baseAngle is provided (meteor shower), use similar angle with variation
+                // Otherwise biased random angle
+                let angle;
+                if (baseAngle !== null) {
+                    angle = baseAngle + (Math.random() * 40 - 20); // ±20° variation
+                } else {
+                    // Heavily bias towards horizontal: -30° to +30° (right-ish) or 150° to 210° (left-ish)
+                    if (Math.random() > 0.5) {
+                        angle = -30 + Math.random() * 60; // Right direction
+                    } else {
+                        angle = 150 + Math.random() * 60; // Left direction
+                    }
+                }
+
+                // Variable distance for each star
+                const distance = 150 + Math.random() * 250;
+                const radians = (angle * Math.PI) / 180;
+                const endX = Math.cos(radians) * distance;
+                const endY = Math.sin(radians) * distance;
+
+                // Unique animation name
+                const animationName = `shoot-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+                const keyframes = `
+                @keyframes ${animationName} {
+                    0% {
+                        opacity: 0;
+                        transform: translate(0, 0) rotate(${angle}deg);
+                    }
+                    10% {
+                        opacity: 1;
+                    }
+                    90% {
+                        opacity: 1;
+                    }
+                    100% {
+                        opacity: 0;
+                        transform: translate(${endX}px, ${endY}px) rotate(${angle}deg);
+                    }
+                }`;
+
+                const style = document.createElement("style");
+                style.textContent = keyframes;
+                document.head.appendChild(style);
+
+                // More varied duration
+                const duration = 1.5 + Math.random() * 3;
+                star.style.animation = `${animationName} ${duration}s linear forwards`;
+
+                starsContainer.appendChild(star);
+
+                // Remove star after animation completes
+                setTimeout(() => {
+                    star.remove();
+                    style.remove();
+                }, duration * 1000);
+            }
+
+            function triggerMeteorShower() {
+                if (isShowerActive) return;
+
+                isShowerActive = true;
+                // Biased shower angle: mostly horizontal
+                const showerAngle =
+                    Math.random() > 0.5
+                        ? -30 + Math.random() * 60 // Right direction
+                        : 150 + Math.random() * 60; // Left direction
+                const numMeteors = 8 + Math.floor(Math.random() * 8); // 8-15 meteors
+
+                // Create meteors in quick succession
+                for (let i = 0; i < numMeteors; i++) {
+                    setTimeout(
+                        () => {
+                            createShootingStar(showerAngle);
+                        },
+                        i * (100 + Math.random() * 200),
+                    ); // 100-300ms between each
+                }
+
+                // Mark shower as complete and schedule next one
+                setTimeout(
+                    () => {
+                        isShowerActive = false;
+                        scheduleNextShower();
+                    },
+                    numMeteors * 300 + 2000,
+                );
+            }
+
+            function scheduleNextShower() {
+                // Random interval between showers: 4-10 seconds
+                const nextShowerIn = 4000 + Math.random() * 6000;
+                setTimeout(triggerMeteorShower, nextShowerIn);
+            }
+
+            function createSingleStar() {
+                createShootingStar(); // Random angle
+                // Schedule next single star
+                const nextStarIn = 2000 + Math.random() * 5000; // 2-7 seconds
+                setTimeout(createSingleStar, nextStarIn);
+            }
+
+            // Start with a few scattered single stars
+            for (let i = 0; i < 3; i++) {
+                setTimeout(createSingleStar, Math.random() * 3000);
+            }
+
+            // Schedule first meteor shower
+            setTimeout(triggerMeteorShower, 2000 + Math.random() * 3000);
+        </script>
+    </body>
+</html>
