@@ -72,16 +72,6 @@
                 will-change: opacity;
             }
 
-            @keyframes twinkle {
-                0%,
-                100% {
-                    opacity: 0.3;
-                }
-                30% {
-                    opacity: 1;
-                }
-            }
-
             .meteors-container {
                 position: absolute;
                 top: 0;
@@ -263,8 +253,13 @@
                     maxSize: 3,
                     minSize: 1,
                     animationDelayMax: 6,
-                    animationDurationMin: 2,
-                    animationDurationMax: 5,
+                    animationDurationMin: 4,
+                    animationDurationMax: 10,
+                    twinkleOpacityMin: 0.4,
+                    twinkleOpacityMax: 1.0,
+                    staticPercentage: 0.30,
+                    staticOpacityMin: 0.4,
+                    staticOpacityMax: 0.7,
                 },
                 meteors: {
                     startXMin: 90,
@@ -324,6 +319,34 @@
                 }
             }
 
+            // Generate twinkle keyframes dynamically from CONFIG
+            function generateTwinkleKeyframes() {
+                try {
+                    const keyframesCSS = `
+                        @keyframes twinkle {
+                            0%, 100% {
+                                opacity: ${CONFIG.stars.twinkleOpacityMin};
+                            }
+                            50% {
+                                opacity: ${CONFIG.stars.twinkleOpacityMax};
+                            }
+                        }
+                    `;
+
+                    // Remove old keyframes if they exist
+                    const oldStyle = document.getElementById("twinkle-keyframes");
+                    if (oldStyle) oldStyle.remove();
+
+                    // Add new keyframes
+                    const style = document.createElement("style");
+                    style.id = "twinkle-keyframes";
+                    style.textContent = keyframesCSS;
+                    document.head.appendChild(style);
+                } catch (error) {
+                    console.error("Failed to generate twinkle keyframes:", error);
+                }
+            }
+
             // Create fixed night sky stars with error handling
             function initializeStars() {
                 try {
@@ -352,16 +375,25 @@
                         star.style.width = size + "px";
                         star.style.height = size + "px";
 
-                        // Varied animation delay for twinkling
-                        star.style.animationDelay =
-                            Math.random() * CONFIG.stars.animationDelayMax +
-                            "s";
-                        star.style.animationDuration =
-                            CONFIG.stars.animationDurationMin +
-                            Math.random() *
-                                (CONFIG.stars.animationDurationMax -
-                                    CONFIG.stars.animationDurationMin) +
-                            "s";
+                        // Make some stars static (non-twinkling)
+                        const isStatic = Math.random() < CONFIG.stars.staticPercentage;
+                        if (isStatic) {
+                            star.style.animation = "none";
+                            star.style.opacity =
+                                CONFIG.stars.staticOpacityMin +
+                                Math.random() * (CONFIG.stars.staticOpacityMax - CONFIG.stars.staticOpacityMin);
+                        } else {
+                            // Varied animation delay for twinkling
+                            star.style.animationDelay =
+                                Math.random() * CONFIG.stars.animationDelayMax +
+                                "s";
+                            star.style.animationDuration =
+                                CONFIG.stars.animationDurationMin +
+                                Math.random() *
+                                    (CONFIG.stars.animationDurationMax -
+                                        CONFIG.stars.animationDurationMin) +
+                                "s";
+                        }
 
                         fragment.appendChild(star);
                     }
@@ -374,6 +406,7 @@
 
             // Initialize night sky size and stars
             initializeNightSkySize();
+            generateTwinkleKeyframes();
             initializeStars();
 
             // Cache DOM elements with error handling
