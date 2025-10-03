@@ -331,6 +331,8 @@
             // Cache DOM elements with error handling
             let meteorsContainer, heroElement, heroDiagonal;
             let isShowerActive = false;
+            const METEOR_ANGLES = [130, 135, 140, 145, 150, 155, 160, 165];
+            const DISTANCE_TIERS = ['short', 'med', 'long'];
 
             function initializeMeteorSystem() {
                 try {
@@ -358,6 +360,64 @@
                 }
             }
 
+            function generateMeteorKeyframes() {
+                try {
+                    if (!heroDiagonal) {
+                        console.warn("heroDiagonal not initialized");
+                        return;
+                    }
+
+                    const distances = {
+                        short: heroDiagonal - 25,
+                        med: heroDiagonal,
+                        long: heroDiagonal + 25
+                    };
+
+                    let keyframesCSS = '';
+
+                    METEOR_ANGLES.forEach(angle => {
+                        const radians = (angle * Math.PI) / 180;
+
+                        DISTANCE_TIERS.forEach(tier => {
+                            const distance = distances[tier];
+                            const endX = Math.cos(radians) * distance;
+                            const endY = Math.sin(radians) * distance;
+
+                            keyframesCSS += `
+                            @keyframes meteor-${angle}-${tier} {
+                                0% {
+                                    opacity: 0;
+                                    transform: translate3d(0, 0, 0) rotate(${angle}deg);
+                                }
+                                5% {
+                                    opacity: 1;
+                                }
+                                95% {
+                                    opacity: 1;
+                                }
+                                100% {
+                                    opacity: 0;
+                                    transform: translate3d(${endX}px, ${endY}px, 0) rotate(${angle}deg);
+                                }
+                            }
+                            `;
+                        });
+                    });
+
+                    // Remove old keyframes if they exist
+                    const oldStyle = document.getElementById('meteor-keyframes');
+                    if (oldStyle) oldStyle.remove();
+
+                    // Add new keyframes
+                    const style = document.createElement('style');
+                    style.id = 'meteor-keyframes';
+                    style.textContent = keyframesCSS;
+                    document.head.appendChild(style);
+                } catch (error) {
+                    console.error("Failed to generate meteor keyframes:", error);
+                }
+            }
+
             function calculateMeteorStartPosition() {
                 const startX =
                     CONFIG.meteors.startXMax -
@@ -380,19 +440,15 @@
                 return { x: startX, y: startY };
             }
 
-            function calculateMeteorAngle(baseAngle = null) {
+            function selectMeteorAngle(baseAngle = null) {
                 if (baseAngle !== null) {
-                    return (
-                        baseAngle +
-                        (Math.random() * CONFIG.meteors.angleVariation * 2 -
-                            CONFIG.meteors.angleVariation)
+                    // For meteor showers, find closest preset angle to baseAngle
+                    return METEOR_ANGLES.reduce((prev, curr) =>
+                        Math.abs(curr - baseAngle) < Math.abs(prev - baseAngle) ? curr : prev
                     );
                 } else {
-                    return (
-                        CONFIG.meteors.angleMin +
-                        Math.random() *
-                            (CONFIG.meteors.angleMax - CONFIG.meteors.angleMin)
-                    );
+                    // Random angle from preset pool
+                    return METEOR_ANGLES[Math.floor(Math.random() * METEOR_ANGLES.length)];
                 }
             }
 
@@ -410,26 +466,9 @@
                 return meteor;
             }
 
-            function generateMeteorAnimation(angle, endX, endY) {
-                const animationName = `meteor-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-                const keyframes = `
-                @keyframes ${animationName} {
-                    0% {
-                        opacity: 0;
-                        transform: translate(0, 0) rotate(${angle}deg);
-                    }
-                    5% {
-                        opacity: 1;
-                    }
-                    95% {
-                        opacity: 1;
-                    }
-                    100% {
-                        opacity: 0;
-                        transform: translate(${endX}px, ${endY}px) rotate(${angle}deg);
-                    }
-                }`;
-                return { animationName, keyframes };
+            function selectMeteorAnimation(angle) {
+                const distanceTier = DISTANCE_TIERS[Math.floor(Math.random() * DISTANCE_TIERS.length)];
+                return `meteor-${angle}-${distanceTier}`;
             }
 
             function createMeteor(baseAngle = null) {
@@ -445,19 +484,8 @@
                     meteor.style.left = startPos.x + "%";
                     meteor.style.top = startPos.y + "%";
 
-                    const angle = calculateMeteorAngle(baseAngle);
-                    const distance =
-                        heroDiagonal + (Math.random() * 2 - 0.5) * 50;
-                    const radians = (angle * Math.PI) / 180;
-                    const endX = Math.cos(radians) * distance;
-                    const endY = Math.sin(radians) * distance;
-
-                    const { animationName, keyframes } =
-                        generateMeteorAnimation(angle, endX, endY);
-
-                    const style = document.createElement("style");
-                    style.textContent = keyframes;
-                    document.head.appendChild(style);
+                    const angle = selectMeteorAngle(baseAngle);
+                    const animationName = selectMeteorAnimation(angle);
 
                     const duration =
                         CONFIG.meteors.durationMin +
@@ -471,7 +499,6 @@
                     setTimeout(() => {
                         try {
                             if (meteor.parentNode) meteor.remove();
-                            if (style.parentNode) style.remove();
                         } catch (cleanupError) {
                             console.warn(
                                 "Error during meteor cleanup:",
@@ -544,6 +571,22 @@
 
             // Initialize meteor system and start animations
             if (initializeMeteorSystem()) {
+                // Generate keyframes once
+                generateMeteorKeyframes();
+
+                // Add resize listener with debouncing
+                let resizeTimeout;
+                window.addEventListener('resize', () => {
+                    clearTimeout(resizeTimeout);
+                    resizeTimeout = setTimeout(() => {
+                        const heroRect = heroElement.getBoundingClientRect();
+                        const heroWidth = heroRect.width;
+                        const heroHeight = heroRect.height;
+                        heroDiagonal = Math.sqrt(heroWidth ** 2 + heroHeight ** 2);
+                        generateMeteorKeyframes();
+                    }, 250);
+                });
+
                 // Start scattered single meteors
                 for (let i = 0; i < 2; i++) {
                     setTimeout(createSingleMeteor, Math.random() * 2000);
