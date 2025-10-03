@@ -41,6 +41,15 @@
                 --font-mono:
                     monospace, -apple-system, BlinkMacSystemFont, "Segoe UI",
                     Arial, sans-serif;
+
+                /* Curved horizon configuration */
+                --horizon-overlap: -12px; /* Content overlap with hero section */
+                --horizon-svg-top: -1px; /* Fine-tune SVG position */
+                --horizon-svg-height: 22px; /* SVG container height */
+                --horizon-stroke-base: 1px; /* Thin stroke for edges */
+                --horizon-stroke-glow: 1.5px; /* Thicker stroke for center */
+                --horizon-edge-opacity: 0.25; /* Opacity at far edges */
+                --horizon-center-opacity: 0.8; /* Opacity at center */
             }
 
             * {
@@ -177,7 +186,7 @@
             .content {
                 position: relative;
                 clip-path: url(#contentCurveClip);
-                margin-top: -12px;
+                margin-top: var(--horizon-overlap);
                 background: linear-gradient(
                     to bottom,
                     #1f2238 0%,
@@ -191,10 +200,10 @@
 
             .horizon-overlay {
                 position: absolute;
-                top: -1px;
+                top: var(--horizon-svg-top);
                 left: 0;
                 width: 100%;
-                height: 22px;
+                height: var(--horizon-svg-height);
                 pointer-events: none;
                 z-index: 10;
             }
@@ -287,17 +296,19 @@
                         fill="white"
                     />
                 </clipPath>
+                <!-- Base stroke gradient: subtle at edges, bright at center -->
                 <linearGradient id="horizonStrokeGradient" x1="0%" x2="100%">
-                    <stop offset="0%" stop-color="rgba(255,255,255,0.25)" />
-                    <stop offset="35%" stop-color="rgba(255,255,255,0.25)" />
-                    <stop offset="50%" stop-color="rgba(255,255,255,0.8)" />
-                    <stop offset="65%" stop-color="rgba(255,255,255,0.25)" />
-                    <stop offset="100%" stop-color="rgba(255,255,255,0.25)" />
+                    <stop offset="0%" stop-color="rgba(255,255,255,var(--horizon-edge-opacity))" />
+                    <stop offset="35%" stop-color="rgba(255,255,255,var(--horizon-edge-opacity))" />
+                    <stop offset="50%" stop-color="rgba(255,255,255,var(--horizon-center-opacity))" />
+                    <stop offset="65%" stop-color="rgba(255,255,255,var(--horizon-edge-opacity))" />
+                    <stop offset="100%" stop-color="rgba(255,255,255,var(--horizon-edge-opacity))" />
                 </linearGradient>
+                <!-- Center glow gradient: only visible in middle 40-60% -->
                 <linearGradient id="horizonCenterGlow" x1="0%" x2="100%">
                     <stop offset="0%" stop-color="rgba(255,255,255,0)" />
                     <stop offset="40%" stop-color="rgba(255,255,255,0.6)" />
-                    <stop offset="50%" stop-color="rgba(255,255,255,0.8)" />
+                    <stop offset="50%" stop-color="rgba(255,255,255,var(--horizon-center-opacity))" />
                     <stop offset="60%" stop-color="rgba(255,255,255,0.6)" />
                     <stop offset="100%" stop-color="rgba(255,255,255,0)" />
                 </linearGradient>
@@ -325,7 +336,7 @@
                 <path
                     d="M 0 13 Q 600 0, 1200 13"
                     stroke="url(#horizonStrokeGradient)"
-                    stroke-width="1"
+                    stroke-width="var(--horizon-stroke-base)"
                     fill="none"
                     vector-effect="non-scaling-stroke"
                 />
@@ -333,7 +344,7 @@
                 <path
                     d="M 0 13 Q 600 0, 1200 13"
                     stroke="url(#horizonCenterGlow)"
-                    stroke-width="1.5"
+                    stroke-width="var(--horizon-stroke-glow)"
                     fill="none"
                     vector-effect="non-scaling-stroke"
                 />
