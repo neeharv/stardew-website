@@ -423,7 +423,7 @@
 
             // Render all stars on canvas
             function renderStars() {
-                if (!starCtx || !isPageVisible) {
+                if (!starCtx || !starCanvas || !isPageVisible) {
                     // Cancel any pending animation frame on early return
                     if (animationFrameId) {
                         cancelAnimationFrame(animationFrameId);
@@ -796,13 +796,15 @@
                         }
 
                         // Update meteor system
-                        const heroRect = heroElement.getBoundingClientRect();
-                        const heroWidth = heroRect.width;
-                        const heroHeight = heroRect.height;
-                        heroDiagonal = Math.sqrt(
-                            heroWidth ** 2 + heroHeight ** 2,
-                        );
-                        generateMeteorKeyframes();
+                        if (heroElement) {
+                            const heroRect = heroElement.getBoundingClientRect();
+                            const heroWidth = heroRect.width;
+                            const heroHeight = heroRect.height;
+                            heroDiagonal = Math.sqrt(
+                                heroWidth ** 2 + heroHeight ** 2,
+                            );
+                            generateMeteorKeyframes();
+                        }
                     }, CONFIG.performance.resizeDebounceMs);
                 });
 
