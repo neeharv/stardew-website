@@ -52,6 +52,7 @@
                 animation: rotateSky 900s linear infinite;
                 will-change: transform;
                 transform: translate3d(-50%, 0, 0);
+                contain: layout style paint;
             }
 
             @keyframes rotateSky {
@@ -89,6 +90,7 @@
                 height: 100%;
                 pointer-events: none;
                 z-index: 2;
+                contain: layout style paint;
             }
 
             .meteor {
@@ -291,6 +293,7 @@
                     }
 
                     const numSkyStars = CONFIG.stars.count;
+                    const fragment = document.createDocumentFragment();
 
                     for (let i = 0; i < numSkyStars; i++) {
                         const star = document.createElement("div");
@@ -319,8 +322,10 @@
                                     CONFIG.stars.animationDurationMin) +
                             "s";
 
-                        nightSky.appendChild(star);
+                        fragment.appendChild(star);
                     }
+
+                    nightSky.appendChild(fragment);
                 } catch (error) {
                     console.error("Failed to initialize stars:", error);
                 }
