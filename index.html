@@ -491,8 +491,11 @@
             }
 
             // Initialize night sky size and stars
+            // Use requestAnimationFrame to ensure layout is complete before initializing stars
             initializeNightSkySize();
-            initializeStars();
+            requestAnimationFrame(() => {
+                initializeStars();
+            });
 
             // Cache DOM elements with error handling
             let meteorsContainer, heroElement, heroDiagonal;
