@@ -55,6 +55,14 @@
                 contain: layout style paint;
             }
 
+            #starCanvas {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+            }
+
             @keyframes rotateSky {
                 from {
                     transform: translate3d(-50%, 0, 0) rotate(0deg);
@@ -62,14 +70,6 @@
                 to {
                     transform: translate3d(-50%, 0, 0) rotate(360deg);
                 }
-            }
-
-            .sky-star {
-                position: absolute;
-                background: white;
-                border-radius: 50%;
-                animation: twinkle 6s ease-in-out infinite;
-                will-change: opacity;
             }
 
             .paused {
@@ -226,7 +226,9 @@
     </head>
     <body>
         <div class="hero">
-            <div class="night-sky" id="nightSky"></div>
+            <div class="night-sky" id="nightSky">
+                <canvas id="starCanvas"></canvas>
+            </div>
             <div class="meteors-container" id="meteorsContainer"></div>
             <div class="logo-container">
                 <div class="logo-text">STARDEW LABS</div>
@@ -345,86 +347,128 @@
                     : CONFIG.stars.countDesktop;
             }
 
-            // Generate twinkle keyframes dynamically from CONFIG
-            function generateTwinkleKeyframes() {
-                try {
-                    const keyframesCSS = `
-                        @keyframes twinkle {
-                            0%, 100% {
-                                opacity: ${CONFIG.stars.twinkleOpacityMin};
-                            }
-                            50% {
-                                opacity: ${CONFIG.stars.twinkleOpacityMax};
-                            }
-                        }
-                    `;
+            // Canvas-based star rendering
+            let starCanvas, starCtx, stars = [], animationFrameId = null;
+            let isPageVisible = !document.hidden;
+            const startTime = performance.now();
 
-                    // Remove old keyframes if they exist
-                    const oldStyle = document.getElementById("twinkle-keyframes");
-                    if (oldStyle) oldStyle.remove();
+            // Generate star data array
+            function generateStars(canvasWidth, canvasHeight) {
+                const numStars = getStarCount();
+                stars = [];
 
-                    // Add new keyframes
-                    const style = document.createElement("style");
-                    style.id = "twinkle-keyframes";
-                    style.textContent = keyframesCSS;
-                    document.head.appendChild(style);
-                } catch (error) {
-                    console.error("Failed to generate twinkle keyframes:", error);
+                for (let i = 0; i < numStars; i++) {
+                    // Random position with bias toward top half (visible area)
+                    const x = Math.random() * canvasWidth;
+                    const y = Math.pow(Math.random(), 1.5) * canvasHeight;
+
+                    // Varied sizes
+                    const size =
+                        CONFIG.stars.minSize +
+                        Math.random() *
+                            (CONFIG.stars.maxSize - CONFIG.stars.minSize);
+
+                    // Make some stars static (non-twinkling)
+                    const isStatic = Math.random() < CONFIG.stars.staticPercentage;
+
+                    if (isStatic) {
+                        stars.push({
+                            x,
+                            y,
+                            size,
+                            isStatic: true,
+                            opacity:
+                                CONFIG.stars.staticOpacityMin +
+                                Math.random() *
+                                    (CONFIG.stars.staticOpacityMax -
+                                        CONFIG.stars.staticOpacityMin),
+                        });
+                    } else {
+                        stars.push({
+                            x,
+                            y,
+                            size,
+                            isStatic: false,
+                            twinkleDelay: Math.random() * CONFIG.stars.animationDelayMax * 1000,
+                            twinkleDuration:
+                                (CONFIG.stars.animationDurationMin +
+                                    Math.random() *
+                                        (CONFIG.stars.animationDurationMax -
+                                            CONFIG.stars.animationDurationMin)) *
+                                1000,
+                        });
+                    }
                 }
             }
 
-            // Create fixed night sky stars with error handling
+            // Ease-in-out function matching CSS ease-in-out
+            function easeInOutSine(t) {
+                return -(Math.cos(Math.PI * t) - 1) / 2;
+            }
+
+            // Calculate current opacity for twinkling star
+            function getTwinkleOpacity(star, currentTime) {
+                const elapsed = currentTime - startTime - star.twinkleDelay;
+                if (elapsed < 0) return CONFIG.stars.twinkleOpacityMin;
+
+                const cyclePosition = (elapsed % star.twinkleDuration) / star.twinkleDuration;
+                const easedPosition = easeInOutSine(cyclePosition);
+
+                return (
+                    CONFIG.stars.twinkleOpacityMin +
+                    easedPosition *
+                        (CONFIG.stars.twinkleOpacityMax - CONFIG.stars.twinkleOpacityMin)
+                );
+            }
+
+            // Render all stars on canvas
+            function renderStars() {
+                if (!starCtx || !isPageVisible) return;
+
+                const currentTime = performance.now();
+
+                starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
+
+                stars.forEach((star) => {
+                    const opacity = star.isStatic
+                        ? star.opacity
+                        : getTwinkleOpacity(star, currentTime);
+
+                    starCtx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+                    starCtx.beginPath();
+                    starCtx.arc(star.x, star.y, star.size / 2, 0, Math.PI * 2);
+                    starCtx.fill();
+                });
+
+                if (isPageVisible) {
+                    animationFrameId = requestAnimationFrame(renderStars);
+                }
+            }
+
+            // Initialize canvas and stars
             function initializeStars() {
                 try {
+                    starCanvas = document.getElementById("starCanvas");
+                    if (!starCanvas) {
+                        throw new Error("Star canvas element not found");
+                    }
+
+                    starCtx = starCanvas.getContext("2d");
+                    if (!starCtx) {
+                        throw new Error("Could not get canvas context");
+                    }
+
+                    // Set canvas size (will be updated in initializeCanvasSize)
                     const nightSky = document.getElementById("nightSky");
-                    if (!nightSky) {
-                        throw new Error("Night sky element not found");
+                    if (nightSky) {
+                        const rect = nightSky.getBoundingClientRect();
+                        starCanvas.width = rect.width * window.devicePixelRatio;
+                        starCanvas.height = rect.height * window.devicePixelRatio;
+                        starCtx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+                        generateStars(rect.width, rect.height);
+                        renderStars();
                     }
-
-                    const numSkyStars = getStarCount();
-                    const fragment = document.createDocumentFragment();
-
-                    for (let i = 0; i < numSkyStars; i++) {
-                        const star = document.createElement("div");
-                        star.className = "sky-star";
-
-                        // Random position with bias toward top half (visible area)
-                        star.style.left = Math.random() * 100 + "%";
-                        star.style.top =
-                            Math.pow(Math.random(), 1.5) * 100 + "%";
-
-                        // Varied sizes
-                        const size =
-                            CONFIG.stars.minSize +
-                            Math.random() *
-                                (CONFIG.stars.maxSize - CONFIG.stars.minSize);
-                        star.style.width = size + "px";
-                        star.style.height = size + "px";
-
-                        // Make some stars static (non-twinkling)
-                        const isStatic = Math.random() < CONFIG.stars.staticPercentage;
-                        if (isStatic) {
-                            star.style.animation = "none";
-                            star.style.opacity =
-                                CONFIG.stars.staticOpacityMin +
-                                Math.random() * (CONFIG.stars.staticOpacityMax - CONFIG.stars.staticOpacityMin);
-                        } else {
-                            // Varied animation delay for twinkling
-                            star.style.animationDelay =
-                                Math.random() * CONFIG.stars.animationDelayMax +
-                                "s";
-                            star.style.animationDuration =
-                                CONFIG.stars.animationDurationMin +
-                                Math.random() *
-                                    (CONFIG.stars.animationDurationMax -
-                                        CONFIG.stars.animationDurationMin) +
-                                "s";
-                        }
-
-                        fragment.appendChild(star);
-                    }
-
-                    nightSky.appendChild(fragment);
                 } catch (error) {
                     console.error("Failed to initialize stars:", error);
                 }
@@ -432,7 +476,6 @@
 
             // Initialize night sky size and stars
             initializeNightSkySize();
-            generateTwinkleKeyframes();
             initializeStars();
 
             // Cache DOM elements with error handling
@@ -441,8 +484,7 @@
             const METEOR_ANGLES = [130, 135, 140, 145, 150, 155, 160, 165];
             const DISTANCE_TIERS = ["short", "med", "long"];
 
-            // Visibility tracking for pause/resume
-            let isPageVisible = !document.hidden;
+            // Meteor timeout tracking for pause/resume
             let activeMeteorTimeouts = [];
             let activeShowerTimeouts = [];
 
@@ -714,18 +756,23 @@
                         // Update night sky size
                         initializeNightSkySize();
 
-                        // Check if we crossed the mobile breakpoint
-                        const newStarCount = getStarCount();
-                        if (newStarCount !== currentStarCount) {
-                            currentStarCount = newStarCount;
-                            // Regenerate stars with new count
+                        // Update canvas size with device pixel ratio
+                        if (starCanvas && starCtx) {
                             const nightSky = document.getElementById("nightSky");
                             if (nightSky) {
-                                // Remove old stars
-                                const oldStars = nightSky.querySelectorAll(".sky-star");
-                                oldStars.forEach(star => star.remove());
-                                // Regenerate with new count
-                                initializeStars();
+                                const rect = nightSky.getBoundingClientRect();
+                                starCanvas.width = rect.width * window.devicePixelRatio;
+                                starCanvas.height = rect.height * window.devicePixelRatio;
+                                starCtx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+                                // Check if we crossed the mobile breakpoint
+                                const newStarCount = getStarCount();
+                                if (newStarCount !== currentStarCount) {
+                                    currentStarCount = newStarCount;
+                                }
+
+                                // Regenerate stars with new canvas size
+                                generateStars(rect.width, rect.height);
                             }
                         }
 
@@ -751,6 +798,12 @@
                         if (nightSky) nightSky.classList.add("paused");
                         if (meteorsContainer) meteorsContainer.classList.add("paused");
 
+                        // Cancel canvas rendering
+                        if (animationFrameId) {
+                            cancelAnimationFrame(animationFrameId);
+                            animationFrameId = null;
+                        }
+
                         // Clear all pending meteor timeouts
                         activeMeteorTimeouts.forEach(clearTimeout);
                         activeShowerTimeouts.forEach(clearTimeout);
@@ -761,6 +814,11 @@
                         isPageVisible = true;
                         if (nightSky) nightSky.classList.remove("paused");
                         if (meteorsContainer) meteorsContainer.classList.remove("paused");
+
+                        // Resume canvas rendering
+                        if (!animationFrameId) {
+                            renderStars();
+                        }
 
                         // Restart meteor creation
                         if (!isShowerActive) {
