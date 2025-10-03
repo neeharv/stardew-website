@@ -269,26 +269,71 @@
                     animationDurationMax: 10,
                     twinkleOpacityMin: 0.4,
                     twinkleOpacityMax: 1.0,
-                    staticPercentage: 0.30,
+                    staticPercentage: 0.3,
                     staticOpacityMin: 0.4,
                     staticOpacityMax: 0.7,
                     spectralClasses: [
-                        { type: 'O-B', color: 'rgba(155, 176, 255,', percentage: 0.05 },
-                        { type: 'A', color: 'rgba(202, 215, 255,', percentage: 0.15 },
-                        { type: 'F-G', color: 'rgba(248, 247, 255,', percentage: 0.30 },
-                        { type: 'K', color: 'rgba(255, 210, 161,', percentage: 0.30 },
-                        { type: 'M', color: 'rgba(255, 204, 111,', percentage: 0.20 }
+                        {
+                            type: "O-B",
+                            color: "rgba(155, 176, 255,",
+                            percentage: 0.05,
+                        },
+                        {
+                            type: "A",
+                            color: "rgba(202, 215, 255,",
+                            percentage: 0.15,
+                        },
+                        {
+                            type: "F-G",
+                            color: "rgba(248, 247, 255,",
+                            percentage: 0.3,
+                        },
+                        {
+                            type: "K",
+                            color: "rgba(255, 210, 161,",
+                            percentage: 0.3,
+                        },
+                        {
+                            type: "M",
+                            color: "rgba(255, 204, 111,",
+                            percentage: 0.2,
+                        },
                     ],
                     binaryPercentage: 0.025,
                     binarySeparationMin: 2,
                     binarySeparationMax: 8,
                 },
                 planets: [
-                    { name: 'Venus', color: 'rgba(255, 250, 235,', size: 4.5, opacity: 0.95 },
-                    { name: 'Jupiter', color: 'rgba(255, 244, 229,', size: 4.2, opacity: 0.9 },
-                    { name: 'Mars', color: 'rgba(255, 180, 140,', size: 3.5, opacity: 0.85 },
-                    { name: 'Saturn', color: 'rgba(255, 245, 220,', size: 3.8, opacity: 0.88 },
-                    { name: 'Mercury', color: 'rgba(230, 235, 255,', size: 3, opacity: 0.8 }
+                    {
+                        name: "Venus",
+                        color: "rgba(255, 250, 235,",
+                        size: 4.5,
+                        opacity: 0.95,
+                    },
+                    {
+                        name: "Jupiter",
+                        color: "rgba(255, 244, 229,",
+                        size: 4.2,
+                        opacity: 0.9,
+                    },
+                    {
+                        name: "Mars",
+                        color: "rgba(255, 180, 140,",
+                        size: 3.5,
+                        opacity: 0.85,
+                    },
+                    {
+                        name: "Saturn",
+                        color: "rgba(255, 245, 220,",
+                        size: 3.8,
+                        opacity: 0.88,
+                    },
+                    {
+                        name: "Mercury",
+                        color: "rgba(230, 235, 255,",
+                        size: 3,
+                        opacity: 0.8,
+                    },
                 ],
                 meteors: {
                     startXMin: 90,
@@ -365,7 +410,11 @@
             }
 
             // Canvas-based star rendering
-            let starCanvas, starCtx, stars = [], planets = [], animationFrameId = null;
+            let starCanvas,
+                starCtx,
+                stars = [],
+                planets = [],
+                animationFrameId = null;
             let isPageVisible = !document.hidden;
             const startTime = performance.now();
 
@@ -385,8 +434,15 @@
             // Generate star data array
             function generateStars(canvasWidth, canvasHeight) {
                 // Validate canvas dimensions
-                if (!canvasWidth || !canvasHeight || canvasWidth <= 0 || canvasHeight <= 0) {
-                    console.warn(`Invalid canvas dimensions for star generation: ${canvasWidth}x${canvasHeight}`);
+                if (
+                    !canvasWidth ||
+                    !canvasHeight ||
+                    canvasWidth <= 0 ||
+                    canvasHeight <= 0
+                ) {
+                    console.warn(
+                        `Invalid canvas dimensions for star generation: ${canvasWidth}x${canvasHeight}`,
+                    );
                     stars = [];
                     return;
                 }
@@ -409,7 +465,8 @@
                     const color = getSpectralColor();
 
                     // Make some stars static (non-twinkling)
-                    const isStatic = Math.random() < CONFIG.stars.staticPercentage;
+                    const isStatic =
+                        Math.random() < CONFIG.stars.staticPercentage;
 
                     if (isStatic) {
                         stars.push({
@@ -431,12 +488,16 @@
                             size,
                             color,
                             isStatic: false,
-                            twinkleDelay: Math.random() * CONFIG.stars.animationDelayMax * 1000,
+                            twinkleDelay:
+                                Math.random() *
+                                CONFIG.stars.animationDelayMax *
+                                1000,
                             twinkleDuration:
                                 (CONFIG.stars.animationDurationMin +
                                     Math.random() *
                                         (CONFIG.stars.animationDurationMax -
-                                            CONFIG.stars.animationDurationMin)) *
+                                            CONFIG.stars
+                                                .animationDurationMin)) *
                                 1000,
                         });
                     }
@@ -444,11 +505,15 @@
                     // Generate binary companion star
                     if (Math.random() < CONFIG.stars.binaryPercentage) {
                         const angle = Math.random() * Math.PI * 2;
-                        const separation = CONFIG.stars.binarySeparationMin +
-                            Math.random() * (CONFIG.stars.binarySeparationMax - CONFIG.stars.binarySeparationMin);
+                        const separation =
+                            CONFIG.stars.binarySeparationMin +
+                            Math.random() *
+                                (CONFIG.stars.binarySeparationMax -
+                                    CONFIG.stars.binarySeparationMin);
                         const companionX = x + Math.cos(angle) * separation;
                         const companionY = y + Math.sin(angle) * separation;
-                        const companionSize = size * (0.6 + Math.random() * 0.3); // 60-90% of primary size
+                        const companionSize =
+                            size * (0.6 + Math.random() * 0.3); // 60-90% of primary size
 
                         if (isStatic) {
                             stars.push({
@@ -470,12 +535,16 @@
                                 size: companionSize,
                                 color,
                                 isStatic: false,
-                                twinkleDelay: Math.random() * CONFIG.stars.animationDelayMax * 1000,
+                                twinkleDelay:
+                                    Math.random() *
+                                    CONFIG.stars.animationDelayMax *
+                                    1000,
                                 twinkleDuration:
                                     (CONFIG.stars.animationDurationMin +
                                         Math.random() *
                                             (CONFIG.stars.animationDurationMax -
-                                                CONFIG.stars.animationDurationMin)) *
+                                                CONFIG.stars
+                                                    .animationDurationMin)) *
                                     1000,
                             });
                         }
@@ -487,7 +556,9 @@
                 CONFIG.planets.forEach((planet, index) => {
                     // Position planets at aesthetically pleasing locations
                     // Spread them across the sky with some randomness
-                    const baseX = (canvasWidth / (CONFIG.planets.length + 1)) * (index + 1);
+                    const baseX =
+                        (canvasWidth / (CONFIG.planets.length + 1)) *
+                        (index + 1);
                     const baseY = canvasHeight * (0.2 + Math.random() * 0.4); // Top 60% of sky
                     const offsetX = (Math.random() - 0.5) * canvasWidth * 0.15;
                     const offsetY = (Math.random() - 0.5) * canvasHeight * 0.15;
@@ -498,7 +569,7 @@
                         size: planet.size,
                         color: planet.color,
                         opacity: planet.opacity,
-                        name: planet.name
+                        name: planet.name,
                     });
                 });
             }
@@ -513,13 +584,15 @@
                 const elapsed = currentTime - startTime - star.twinkleDelay;
                 if (elapsed < 0) return CONFIG.stars.twinkleOpacityMin;
 
-                const cyclePosition = (elapsed % star.twinkleDuration) / star.twinkleDuration;
+                const cyclePosition =
+                    (elapsed % star.twinkleDuration) / star.twinkleDuration;
                 const easedPosition = easeInOutSine(cyclePosition);
 
                 return (
                     CONFIG.stars.twinkleOpacityMin +
                     easedPosition *
-                        (CONFIG.stars.twinkleOpacityMax - CONFIG.stars.twinkleOpacityMin)
+                        (CONFIG.stars.twinkleOpacityMax -
+                            CONFIG.stars.twinkleOpacityMin)
                 );
             }
 
@@ -537,7 +610,12 @@
                 try {
                     const currentTime = performance.now();
 
-                    starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
+                    starCtx.clearRect(
+                        0,
+                        0,
+                        starCanvas.width,
+                        starCanvas.height,
+                    );
 
                     // Render stars with spectral colors
                     stars.forEach((star) => {
@@ -547,7 +625,13 @@
 
                         starCtx.fillStyle = `${star.color} ${opacity})`;
                         starCtx.beginPath();
-                        starCtx.arc(star.x, star.y, star.size / 2, 0, Math.PI * 2);
+                        starCtx.arc(
+                            star.x,
+                            star.y,
+                            star.size / 2,
+                            0,
+                            Math.PI * 2,
+                        );
                         starCtx.fill();
                     });
 
@@ -555,7 +639,13 @@
                     planets.forEach((planet) => {
                         starCtx.fillStyle = `${planet.color} ${planet.opacity})`;
                         starCtx.beginPath();
-                        starCtx.arc(planet.x, planet.y, planet.size / 2, 0, Math.PI * 2);
+                        starCtx.arc(
+                            planet.x,
+                            planet.y,
+                            planet.size / 2,
+                            0,
+                            Math.PI * 2,
+                        );
                         starCtx.fill();
                     });
 
@@ -590,8 +680,12 @@
                     if (nightSky) {
                         const rect = nightSky.getBoundingClientRect();
                         starCanvas.width = rect.width * window.devicePixelRatio;
-                        starCanvas.height = rect.height * window.devicePixelRatio;
-                        starCtx.scale(window.devicePixelRatio, window.devicePixelRatio);
+                        starCanvas.height =
+                            rect.height * window.devicePixelRatio;
+                        starCtx.scale(
+                            window.devicePixelRatio,
+                            window.devicePixelRatio,
+                        );
 
                         generateStars(rect.width, rect.height);
                         renderStars();
@@ -848,7 +942,8 @@
                         isShowerActive = false;
                         scheduleNextShower();
                     },
-                    numMeteors * CONFIG.meteors.showerCleanupDelayPerMeteor + CONFIG.meteors.showerCleanupDelayBase,
+                    numMeteors * CONFIG.meteors.showerCleanupDelayPerMeteor +
+                        CONFIG.meteors.showerCleanupDelayBase,
                 );
                 activeShowerTimeouts.push(cleanupTimeoutId);
             }
@@ -894,12 +989,18 @@
 
                         // Update canvas size with device pixel ratio
                         if (starCanvas && starCtx) {
-                            const nightSky = document.getElementById("nightSky");
+                            const nightSky =
+                                document.getElementById("nightSky");
                             if (nightSky) {
                                 const rect = nightSky.getBoundingClientRect();
-                                starCanvas.width = rect.width * window.devicePixelRatio;
-                                starCanvas.height = rect.height * window.devicePixelRatio;
-                                starCtx.scale(window.devicePixelRatio, window.devicePixelRatio);
+                                starCanvas.width =
+                                    rect.width * window.devicePixelRatio;
+                                starCanvas.height =
+                                    rect.height * window.devicePixelRatio;
+                                starCtx.scale(
+                                    window.devicePixelRatio,
+                                    window.devicePixelRatio,
+                                );
 
                                 // Check if we crossed the mobile breakpoint
                                 const newStarCount = getStarCount();
@@ -914,7 +1015,8 @@
 
                         // Update meteor system
                         if (heroElement) {
-                            const heroRect = heroElement.getBoundingClientRect();
+                            const heroRect =
+                                heroElement.getBoundingClientRect();
                             const heroWidth = heroRect.width;
                             const heroHeight = heroRect.height;
                             heroDiagonal = Math.sqrt(
@@ -928,13 +1030,15 @@
                 // Visibility change handler for pause/resume
                 document.addEventListener("visibilitychange", () => {
                     const nightSky = document.getElementById("nightSky");
-                    const meteorsContainer = document.getElementById("meteorsContainer");
+                    const meteorsContainer =
+                        document.getElementById("meteorsContainer");
 
                     if (document.hidden) {
                         // Page is hidden - pause animations
                         isPageVisible = false;
                         if (nightSky) nightSky.classList.add("paused");
-                        if (meteorsContainer) meteorsContainer.classList.add("paused");
+                        if (meteorsContainer)
+                            meteorsContainer.classList.add("paused");
 
                         // Cancel canvas rendering
                         if (animationFrameId) {
@@ -951,15 +1055,17 @@
                         // Page is visible - resume animations
                         isPageVisible = true;
                         if (nightSky) nightSky.classList.remove("paused");
-                        if (meteorsContainer) meteorsContainer.classList.remove("paused");
+                        if (meteorsContainer)
+                            meteorsContainer.classList.remove("paused");
 
                         // Reset shower state since all timeouts were cleared when hidden
                         isShowerActive = false;
 
                         // Clean up old meteors whose cleanup timeouts were cleared
                         if (meteorsContainer) {
-                            const oldMeteors = meteorsContainer.querySelectorAll(".meteor");
-                            oldMeteors.forEach(meteor => meteor.remove());
+                            const oldMeteors =
+                                meteorsContainer.querySelectorAll(".meteor");
+                            oldMeteors.forEach((meteor) => meteor.remove());
                         }
 
                         // Resume canvas rendering
@@ -969,28 +1075,47 @@
 
                         // Restart meteor creation
                         // Restart single meteors
-                        for (let i = 0; i < CONFIG.meteors.singleMeteorStreamCount; i++) {
-                            setTimeout(createSingleMeteor, Math.random() * CONFIG.meteors.initialMeteorDelayMax);
+                        for (
+                            let i = 0;
+                            i < CONFIG.meteors.singleMeteorStreamCount;
+                            i++
+                        ) {
+                            setTimeout(
+                                createSingleMeteor,
+                                Math.random() *
+                                    CONFIG.meteors.initialMeteorDelayMax,
+                            );
                         }
                         // Restart showers
                         setTimeout(
                             triggerMeteorShower,
                             CONFIG.meteors.initialShowerDelayMin +
-                                Math.random() * (CONFIG.meteors.initialShowerDelayMax - CONFIG.meteors.initialShowerDelayMin)
+                                Math.random() *
+                                    (CONFIG.meteors.initialShowerDelayMax -
+                                        CONFIG.meteors.initialShowerDelayMin),
                         );
                     }
                 });
 
                 // Start scattered single meteors
-                for (let i = 0; i < CONFIG.meteors.singleMeteorStreamCount; i++) {
-                    setTimeout(createSingleMeteor, Math.random() * CONFIG.meteors.initialMeteorDelayMax);
+                for (
+                    let i = 0;
+                    i < CONFIG.meteors.singleMeteorStreamCount;
+                    i++
+                ) {
+                    setTimeout(
+                        createSingleMeteor,
+                        Math.random() * CONFIG.meteors.initialMeteorDelayMax,
+                    );
                 }
 
                 // Start first meteor shower
                 setTimeout(
                     triggerMeteorShower,
                     CONFIG.meteors.initialShowerDelayMin +
-                        Math.random() * (CONFIG.meteors.initialShowerDelayMax - CONFIG.meteors.initialShowerDelayMin)
+                        Math.random() *
+                            (CONFIG.meteors.initialShowerDelayMax -
+                                CONFIG.meteors.initialShowerDelayMin),
                 );
             }
         </script>
