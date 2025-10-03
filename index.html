@@ -423,25 +423,41 @@
 
             // Render all stars on canvas
             function renderStars() {
-                if (!starCtx || !isPageVisible) return;
+                if (!starCtx || !isPageVisible) {
+                    // Cancel any pending animation frame on early return
+                    if (animationFrameId) {
+                        cancelAnimationFrame(animationFrameId);
+                        animationFrameId = null;
+                    }
+                    return;
+                }
 
-                const currentTime = performance.now();
+                try {
+                    const currentTime = performance.now();
 
-                starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
+                    starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
 
-                stars.forEach((star) => {
-                    const opacity = star.isStatic
-                        ? star.opacity
-                        : getTwinkleOpacity(star, currentTime);
+                    stars.forEach((star) => {
+                        const opacity = star.isStatic
+                            ? star.opacity
+                            : getTwinkleOpacity(star, currentTime);
 
-                    starCtx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
-                    starCtx.beginPath();
-                    starCtx.arc(star.x, star.y, star.size / 2, 0, Math.PI * 2);
-                    starCtx.fill();
-                });
+                        starCtx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+                        starCtx.beginPath();
+                        starCtx.arc(star.x, star.y, star.size / 2, 0, Math.PI * 2);
+                        starCtx.fill();
+                    });
 
-                if (isPageVisible) {
-                    animationFrameId = requestAnimationFrame(renderStars);
+                    if (isPageVisible) {
+                        animationFrameId = requestAnimationFrame(renderStars);
+                    }
+                } catch (error) {
+                    console.error("Error in renderStars:", error);
+                    // Cancel animation loop on error to prevent infinite error spam
+                    if (animationFrameId) {
+                        cancelAnimationFrame(animationFrameId);
+                        animationFrameId = null;
+                    }
                 }
             }
 
