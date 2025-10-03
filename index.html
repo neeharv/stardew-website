@@ -27,7 +27,7 @@
                     "Segoe UI",
                     Arial,
                     sans-serif;
-                min-height: 90vh;
+                min-height: 100vh;
                 display: flex;
                 flex-direction: column;
             }
@@ -42,40 +42,84 @@
                 overflow: hidden;
             }
 
-            .stars-container {
+            .night-sky {
+                position: absolute;
+                top: 0;
+                left: 50%;
+                width: 300%;
+                height: 300%;
+                transform-origin: 50% 100%;
+                animation: rotateSky 300s linear infinite;
+            }
+
+            @keyframes rotateSky {
+                from {
+                    transform: translateX(-50%) rotate(0deg);
+                }
+                to {
+                    transform: translateX(-50%) rotate(360deg);
+                }
+            }
+
+            .sky-star {
+                position: absolute;
+                background: white;
+                border-radius: 50%;
+                animation: twinkle 3s ease-in-out infinite;
+            }
+
+            @keyframes twinkle {
+                0%,
+                100% {
+                    opacity: 0.3;
+                }
+                50% {
+                    opacity: 1;
+                }
+            }
+
+            .meteors-container {
                 position: absolute;
                 top: 0;
                 left: 0;
                 width: 100%;
                 height: 100%;
                 pointer-events: none;
+                z-index: 2;
             }
 
-            .star {
+            .meteor {
                 position: absolute;
-                width: 3px;
-                height: 3px;
-                background: rgba(255, 255, 255, 0.8);
-                border-radius: 50%;
                 opacity: 0;
-                box-shadow: 0 0 2px rgba(255, 255, 255, 0.3);
             }
 
-            .star::after {
-                content: "";
+            .meteor-head {
+                width: 4px;
+                height: 4px;
+                background: radial-gradient(
+                    circle,
+                    white,
+                    rgba(255, 255, 255, 0.8)
+                );
+                border-radius: 50%;
+                box-shadow: 0 0 4px rgba(255, 255, 255, 0.6);
+            }
+
+            .meteor-tail {
                 position: absolute;
                 top: 50%;
-                left: -60px;
-                width: 50px;
-                height: 1px;
+                left: -70px;
+                width: 60px;
+                height: 2px;
                 background: linear-gradient(
                     90deg,
                     transparent,
-                    rgba(255, 255, 255, 0.1) 40%,
-                    rgba(255, 255, 255, 0.2) 80%,
+                    rgba(255, 200, 150, 0.2) 30%,
+                    rgba(255, 220, 180, 0.4) 70%,
                     transparent 95%
                 );
                 transform: translateY(-50%);
+                filter: blur(0.5px);
             }
 
             .logo-container {
@@ -83,7 +127,7 @@
                 max-width: 1200px;
                 width: 100%;
                 position: relative;
-                z-index: 1;
+                z-index: 3;
             }
 
             .logo-text {
@@ -94,9 +138,23 @@
                 display: block;
             }
 
+            .horizon {
+                height: 1px;
+                background: linear-gradient(
+                    to right,
+                    transparent,
+                    rgba(255, 255, 255, 0.3) 50%,
+                    transparent
+                );
+                position: relative;
+                z-index: 4;
+            }
+
             .content {
                 background-color: transparent;
                 padding: 40px 20px 60px;
+                position: relative;
+                z-index: 4;
             }
 
             .content-wrapper {
@@ -111,7 +169,15 @@
             .right-content p {
                 font-family: monospace;
                 font-size: clamp(18px, 2.5vw, 24px);
+                line-height: 1.1;
+                text-align: right;
+            }
+
+            .left-content p {
+                font-family: monospace;
+                font-size: clamp(18px, 2.5vw, 24px);
                 line-height: 1.6;
+                text-align: left;
             }
 
             .contact {
@@ -139,7 +205,7 @@
             @media (max-width: 768px) {
                 .content-wrapper {
                     grid-template-columns: 1fr;
-                    gap: 40px;
+                    gap: 20px;
                 }
 
                 .logo-text {
@@ -150,19 +216,24 @@
     </head>
     <body>
         <div class="hero">
-            <div class="stars-container" id="starsContainer"></div>
+            <div class="night-sky" id="nightSky"></div>
+            <div class="meteors-container" id="meteorsContainer"></div>
             <div class="logo-container">
                 <div class="logo-text">STARDEW LABS</div>
             </div>
         </div>
 
+        <div class="horizon"></div>
+
         <div class="content">
             <div class="content-wrapper">
-                <div class="right-content">
+                <div class="left-content">
                     <p>
                         Ignition is imminent. We (Neehar + Tara) are cooking up
                         something new – watch this space!
                     </p>
+                </div>
+                <div class="right-content">
                     <div class="contact">
                         <strong>In the meantime, reach us at:</strong>
                         <a href="mailto:hello@stardew.work"
@@ -173,42 +244,69 @@
             </div>
         </div>
         <script>
-            const starsContainer = document.getElementById("starsContainer");
+            // Create fixed night sky stars
+            const nightSky = document.getElementById("nightSky");
+            const numSkyStars = 150;
+
+            for (let i = 0; i < numSkyStars; i++) {
+                const star = document.createElement("div");
+                star.className = "sky-star";
+
+                // Random position
+                star.style.left = Math.random() * 100 + "%";
+                star.style.top = Math.random() * 100 + "%";
+
+                // Varied sizes
+                const size = 1 + Math.random() * 2;
+                star.style.width = size + "px";
+                star.style.height = size + "px";
+
+                // Varied animation delay for twinkling
+                star.style.animationDelay = Math.random() * 3 + "s";
+                star.style.animationDuration = 2 + Math.random() * 3 + "s";
+
+                nightSky.appendChild(star);
+            }
+
+            // Meteor shower system
+            const meteorsContainer =
+                document.getElementById("meteorsContainer");
             let isShowerActive = false;
 
-            function createShootingStar(baseAngle = null) {
-                const star = document.createElement("div");
-                star.className = "star";
+            function createMeteor(baseAngle = null) {
+                const meteor = document.createElement("div");
+                meteor.className = "meteor";
 
-                // Truly random starting position - can start anywhere including edges
-                const startX = Math.random() * 120 - 10; // -10% to 110%
-                const startY = Math.random() * 120 - 10; // -10% to 110%
-                star.style.left = startX + "%";
-                star.style.top = startY + "%";
+                // Start from top-right area, fall towards bottom-left
+                const startX = 100 - Math.random() * 20; // 100% to 40% (right side bias)
+                const startY = -10 + Math.random() * 50; // -10% to 40% (top bias)
+                meteor.style.left = startX + "%";
+                meteor.style.top = startY + "%";
 
-                // Bias towards horizontal directions
-                // If baseAngle is provided (meteor shower), use similar angle with variation
-                // Otherwise biased random angle
+                // Create meteor structure
+                const head = document.createElement("div");
+                head.className = "meteor-head";
+                const tail = document.createElement("div");
+                tail.className = "meteor-tail";
+                meteor.appendChild(head);
+                meteor.appendChild(tail);
+
+                // Angle: falling from top-right to bottom-left (roughly 100-170 degrees)
                 let angle;
                 if (baseAngle !== null) {
-                    angle = baseAngle + (Math.random() * 40 - 20); // ±20° variation
+                    angle = baseAngle + (Math.random() * 30 - 15); // ±15° variation
                 } else {
-                    // Heavily bias towards horizontal: -30° to +30° (right-ish) or 150° to 210° (left-ish)
-                    if (Math.random() > 0.5) {
-                        angle = -30 + Math.random() * 60; // Right direction
-                    } else {
-                        angle = 150 + Math.random() * 60; // Left direction
-                    }
+                    angle = 130 + Math.random() * 40; // 120-170 degrees
                 }
 
-                // Variable distance for each star
-                const distance = 150 + Math.random() * 250;
+                // Calculate end position
+                const distance = 300 + Math.random() * 400;
                 const radians = (angle * Math.PI) / 180;
                 const endX = Math.cos(radians) * distance;
                 const endY = Math.sin(radians) * distance;
 
-                // Unique animation name
-                const animationName = `shoot-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+                // Unique animation
+                const animationName = `meteor-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
                 const keyframes = `
                 @keyframes ${animationName} {
@@ -216,10 +314,10 @@
                         opacity: 0;
                         transform: translate(0, 0) rotate(${angle}deg);
                     }
-                    10% {
+                    5% {
                         opacity: 1;
                     }
-                    90% {
+                    95% {
                         opacity: 1;
                     }
                     100% {
@@ -232,15 +330,13 @@
                 style.textContent = keyframes;
                 document.head.appendChild(style);
 
-                // More varied duration
-                const duration = 1.5 + Math.random() * 3;
-                star.style.animation = `${animationName} ${duration}s linear forwards`;
+                const duration = 1 + Math.random() * 2;
+                meteor.style.animation = `${animationName} ${duration}s linear forwards`;
 
-                starsContainer.appendChild(star);
+                meteorsContainer.appendChild(meteor);
 
-                // Remove star after animation completes
                 setTimeout(() => {
-                    star.remove();
+                    meteor.remove();
                     style.remove();
                 }, duration * 1000);
             }
@@ -249,53 +345,45 @@
                 if (isShowerActive) return;
 
                 isShowerActive = true;
-                // Biased shower angle: mostly horizontal
-                const showerAngle =
-                    Math.random() > 0.5
-                        ? -30 + Math.random() * 60 // Right direction
-                        : 150 + Math.random() * 60; // Left direction
-                const numMeteors = 8 + Math.floor(Math.random() * 8); // 8-15 meteors
+                const showerAngle = 130 + Math.random() * 40; // Base angle for shower
+                const numMeteors = 6 + Math.floor(Math.random() * 9); // 6-15 meteors
 
-                // Create meteors in quick succession
                 for (let i = 0; i < numMeteors; i++) {
                     setTimeout(
                         () => {
-                            createShootingStar(showerAngle);
+                            createMeteor(showerAngle);
                         },
-                        i * (100 + Math.random() * 200),
-                    ); // 100-300ms between each
+                        i * (80 + Math.random() * 150),
+                    );
                 }
 
-                // Mark shower as complete and schedule next one
                 setTimeout(
                     () => {
                         isShowerActive = false;
                         scheduleNextShower();
                     },
-                    numMeteors * 300 + 2000,
+                    numMeteors * 250 + 2000,
                 );
             }
 
             function scheduleNextShower() {
-                // Random interval between showers: 4-10 seconds
-                const nextShowerIn = 4000 + Math.random() * 6000;
+                const nextShowerIn = 3000 + Math.random() * 5000; // 3-8 seconds
                 setTimeout(triggerMeteorShower, nextShowerIn);
             }
 
-            function createSingleStar() {
-                createShootingStar(); // Random angle
-                // Schedule next single star
-                const nextStarIn = 2000 + Math.random() * 5000; // 2-7 seconds
-                setTimeout(createSingleStar, nextStarIn);
+            function createSingleMeteor() {
+                createMeteor();
+                const nextMeteorIn = 1500 + Math.random() * 4000; // 1.5-5.5 seconds
+                setTimeout(createSingleMeteor, nextMeteorIn);
             }
 
-            // Start with a few scattered single stars
+            // Start scattered single meteors
             for (let i = 0; i < 3; i++) {
-                setTimeout(createSingleStar, Math.random() * 3000);
+                setTimeout(createSingleMeteor, Math.random() * 2000);
             }
 
-            // Schedule first meteor shower
-            setTimeout(triggerMeteorShower, 2000 + Math.random() * 3000);
+            // Start first meteor shower
+            setTimeout(triggerMeteorShower, 2000 + Math.random() * 2000);
         </script>
     </body>
 </html>
