@@ -831,24 +831,25 @@
                         if (nightSky) nightSky.classList.remove("paused");
                         if (meteorsContainer) meteorsContainer.classList.remove("paused");
 
+                        // Reset shower state since all timeouts were cleared when hidden
+                        isShowerActive = false;
+
                         // Resume canvas rendering
                         if (!animationFrameId) {
                             renderStars();
                         }
 
                         // Restart meteor creation
-                        if (!isShowerActive) {
-                            // Restart single meteors
-                            for (let i = 0; i < CONFIG.meteors.singleMeteorStreamCount; i++) {
-                                setTimeout(createSingleMeteor, Math.random() * CONFIG.meteors.initialMeteorDelayMax);
-                            }
-                            // Restart showers
-                            setTimeout(
-                                triggerMeteorShower,
-                                CONFIG.meteors.initialShowerDelayMin +
-                                    Math.random() * (CONFIG.meteors.initialShowerDelayMax - CONFIG.meteors.initialShowerDelayMin)
-                            );
+                        // Restart single meteors
+                        for (let i = 0; i < CONFIG.meteors.singleMeteorStreamCount; i++) {
+                            setTimeout(createSingleMeteor, Math.random() * CONFIG.meteors.initialMeteorDelayMax);
                         }
+                        // Restart showers
+                        setTimeout(
+                            triggerMeteorShower,
+                            CONFIG.meteors.initialShowerDelayMin +
+                                Math.random() * (CONFIG.meteors.initialShowerDelayMax - CONFIG.meteors.initialShowerDelayMin)
+                        );
                     }
                 });
 
