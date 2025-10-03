@@ -354,6 +354,13 @@
 
             // Generate star data array
             function generateStars(canvasWidth, canvasHeight) {
+                // Validate canvas dimensions
+                if (!canvasWidth || !canvasHeight || canvasWidth <= 0 || canvasHeight <= 0) {
+                    console.warn(`Invalid canvas dimensions for star generation: ${canvasWidth}x${canvasHeight}`);
+                    stars = [];
+                    return;
+                }
+
                 const numStars = getStarCount();
                 stars = [];
 
