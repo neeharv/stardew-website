@@ -50,14 +50,16 @@
                 height: 200vw;
                 transform-origin: 50% 100%;
                 animation: rotateSky 900s linear infinite;
+                will-change: transform;
+                transform: translate3d(-50%, 0, 0);
             }
 
             @keyframes rotateSky {
                 from {
-                    transform: translateX(-50%) rotate(0deg);
+                    transform: translate3d(-50%, 0, 0) rotate(0deg);
                 }
                 to {
-                    transform: translateX(-50%) rotate(360deg);
+                    transform: translate3d(-50%, 0, 0) rotate(360deg);
                 }
             }
 
@@ -66,6 +68,7 @@
                 background: white;
                 border-radius: 50%;
                 animation: twinkle 6s ease-in-out infinite;
+                will-change: opacity;
             }
 
             @keyframes twinkle {
@@ -91,6 +94,7 @@
             .meteor {
                 position: absolute;
                 opacity: 0;
+                will-change: transform, opacity;
             }
 
             .meteor-head {
