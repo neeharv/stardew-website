@@ -174,19 +174,10 @@
                 display: block;
             }
 
-            .horizon {
-                height: 1px;
-                background: linear-gradient(
-                    to right,
-                    transparent,
-                    rgba(255, 255, 255, 0.3) 50%,
-                    transparent
-                );
-                position: relative;
-                z-index: 4;
-            }
-
             .content {
+                position: relative;
+                clip-path: url(#contentCurveClip);
+                margin-top: -12px;
                 background: linear-gradient(
                     to bottom,
                     #1f2238 0%,
@@ -195,8 +186,17 @@
                     #2d2f3a 100%
                 );
                 padding: 40px 20px 60px;
-                position: relative;
                 z-index: 4;
+            }
+
+            .horizon-overlay {
+                position: absolute;
+                top: -1px;
+                left: 0;
+                width: 100%;
+                height: 22px;
+                pointer-events: none;
+                z-index: 10;
             }
 
             .content-wrapper {
@@ -270,6 +270,40 @@
         </style>
     </head>
     <body>
+        <!-- SVG definitions for clip-path and gradient -->
+        <svg
+            width="0"
+            height="0"
+            style="position: absolute"
+            xmlns="http://www.w3.org/2000/svg"
+        >
+            <defs>
+                <clipPath
+                    id="contentCurveClip"
+                    clipPathUnits="objectBoundingBox"
+                >
+                    <path
+                        d="M 0,0.038 Q 0.5,0 1,0.038 L 1,1 L 0,1 Z"
+                        fill="white"
+                    />
+                </clipPath>
+                <linearGradient id="horizonStrokeGradient" x1="0%" x2="100%">
+                    <stop offset="0%" stop-color="rgba(255,255,255,0.25)" />
+                    <stop offset="35%" stop-color="rgba(255,255,255,0.25)" />
+                    <stop offset="50%" stop-color="rgba(255,255,255,0.8)" />
+                    <stop offset="65%" stop-color="rgba(255,255,255,0.25)" />
+                    <stop offset="100%" stop-color="rgba(255,255,255,0.25)" />
+                </linearGradient>
+                <linearGradient id="horizonCenterGlow" x1="0%" x2="100%">
+                    <stop offset="0%" stop-color="rgba(255,255,255,0)" />
+                    <stop offset="40%" stop-color="rgba(255,255,255,0.6)" />
+                    <stop offset="50%" stop-color="rgba(255,255,255,0.8)" />
+                    <stop offset="60%" stop-color="rgba(255,255,255,0.6)" />
+                    <stop offset="100%" stop-color="rgba(255,255,255,0)" />
+                </linearGradient>
+            </defs>
+        </svg>
+
         <div class="hero">
             <div class="night-sky" id="nightSky">
                 <canvas id="starCanvas"></canvas>
@@ -280,9 +314,30 @@
             </div>
         </div>
 
-        <div class="horizon"></div>
-
         <div class="content">
+            <svg
+                class="horizon-overlay"
+                viewBox="0 0 1200 22"
+                preserveAspectRatio="none"
+                xmlns="http://www.w3.org/2000/svg"
+            >
+                <!-- Thin stroke for edges -->
+                <path
+                    d="M 0 13 Q 600 0, 1200 13"
+                    stroke="url(#horizonStrokeGradient)"
+                    stroke-width="1"
+                    fill="none"
+                    vector-effect="non-scaling-stroke"
+                />
+                <!-- Thicker stroke for center glow -->
+                <path
+                    d="M 0 13 Q 600 0, 1200 13"
+                    stroke="url(#horizonCenterGlow)"
+                    stroke-width="1.5"
+                    fill="none"
+                    vector-effect="non-scaling-stroke"
+                />
+            </svg>
             <div class="content-wrapper">
                 <div class="left-content">
                     <p>
