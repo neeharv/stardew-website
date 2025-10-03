@@ -288,6 +288,36 @@
             </div>
         </div>
         <script>
+            /**
+             * ARCHITECTURE OVERVIEW:
+             * This page creates a rotating night sky effect with three main visual systems:
+             *
+             * 1. ROTATING SKY CONTAINER (.night-sky):
+             *    - A square container positioned at the horizon line (bottom of .hero)
+             *    - Rotates 360° over 900s, creating the illusion of Earth's rotation
+             *    - Sized to cover the viewport even during rotation (diagonal * 2.2)
+             *    - Contains a canvas with stars and planets
+             *
+             * 2. STAR FIELD (canvas-based):
+             *    - Stars: Generated with realistic spectral colors (O-B through M class)
+             *    - 30% static, 70% twinkling using canvas animation loop
+             *    - Binary systems: 2.5% of stars have companion stars
+             *    - Planets: 5 bright non-twinkling objects positioned aesthetically
+             *    - Performance: Uses requestAnimationFrame for smooth 60fps rendering
+             *
+             * 3. METEOR SYSTEM (DOM-based CSS animations):
+             *    - Two parallel systems: random single meteors + periodic showers
+             *    - Preset angles (130-165°) with dynamically generated keyframes
+             *    - Distance tiers (short/med/long) for visual depth
+             *    - Timeouts tracked for pause/resume on visibility change
+             *
+             * PERFORMANCE OPTIMIZATIONS:
+             * - Canvas rendering pauses when tab is hidden
+             * - Meteors use CSS animations (GPU accelerated) not JS
+             * - Debounced resize handlers (250ms)
+             * - Device pixel ratio scaling for sharp stars on retina displays
+             */
+
             // Configuration object
             const CONFIG = {
                 stars: {
@@ -304,37 +334,41 @@
                     staticPercentage: 0.3,
                     staticOpacityMin: 0.4,
                     staticOpacityMax: 0.7,
+                    // Spectral classes follow real star distribution (OBAFGKM)
+                    // Color strings intentionally incomplete - opacity added in renderStars()
                     spectralClasses: [
                         {
-                            type: "O-B",
+                            type: "O-B", // Hot blue-white stars (rare)
                             color: "rgba(155, 176, 255,",
                             percentage: 0.05,
                         },
                         {
-                            type: "A",
+                            type: "A", // White stars
                             color: "rgba(202, 215, 255,",
                             percentage: 0.15,
                         },
                         {
-                            type: "F-G",
+                            type: "F-G", // Yellow-white stars (like our Sun)
                             color: "rgba(248, 247, 255,",
                             percentage: 0.3,
                         },
                         {
-                            type: "K",
+                            type: "K", // Orange stars
                             color: "rgba(255, 210, 161,",
                             percentage: 0.3,
                         },
                         {
-                            type: "M",
+                            type: "M", // Red dwarfs (most common in reality)
                             color: "rgba(255, 204, 111,",
                             percentage: 0.2,
                         },
                     ],
-                    binaryPercentage: 0.025,
-                    binarySeparationMin: 2,
+                    binaryPercentage: 0.025, // 2.5% of stars have binary companions
+                    binarySeparationMin: 2, // Pixels between binary pair
                     binarySeparationMax: 8,
                 },
+                // Planets are rendered as bright, non-twinkling points
+                // Names are for reference only (not displayed to user)
                 planets: [
                     {
                         name: "Venus",
@@ -368,31 +402,33 @@
                     },
                 ],
                 meteors: {
-                    startXMin: 90,
-                    startXMax: 120,
+                    // Start positions in percentage (can be outside viewport)
+                    startXMin: 90, // Right edge
+                    startXMax: 120, // Beyond right edge
+                    // Y varies based on X to ensure meteors enter from top-right
                     startYMin: {
-                        whenXOutOfBounds: -10,
-                        whenXInBounds: -40,
+                        whenXOutOfBounds: -10, // Start just above viewport if X > 100%
+                        whenXInBounds: -40, // Start higher if X < 100%
                     },
-                    startYMax: 50,
-                    angleMin: 130,
-                    angleMax: 160,
-                    angleVariation: 15,
-                    durationMin: 4,
+                    startYMax: 50, // Can start partway down screen
+                    angleMin: 130, // Diagonal down-left (degrees)
+                    angleMax: 160, // Steeper down-left
+                    angleVariation: 15, // Not currently used
+                    durationMin: 4, // Seconds for meteor animation
                     durationMax: 6,
-                    showerCountMin: 6,
+                    showerCountMin: 6, // Meteors per shower
                     showerCountMax: 12,
-                    showerIntervalMin: 80,
+                    showerIntervalMin: 80, // Milliseconds between meteors in shower
                     showerIntervalMax: 230,
-                    singleMeteorIntervalMin: 1500,
+                    singleMeteorIntervalMin: 1500, // Milliseconds between random meteors
                     singleMeteorIntervalMax: 5500,
-                    nextShowerMin: 3000,
+                    nextShowerMin: 3000, // Milliseconds until next shower
                     nextShowerMax: 8000,
-                    singleMeteorStreamCount: 2,
-                    initialMeteorDelayMax: 2000,
-                    initialShowerDelayMin: 2000,
+                    singleMeteorStreamCount: 2, // Parallel random meteor timers
+                    initialMeteorDelayMax: 2000, // Stagger initial meteors
+                    initialShowerDelayMin: 2000, // Wait before first shower
                     initialShowerDelayMax: 4000,
-                    showerCleanupDelayPerMeteor: 250,
+                    showerCleanupDelayPerMeteor: 250, // Grace period before next shower
                     showerCleanupDelayBase: 2000,
                 },
                 performance: {
@@ -400,7 +436,18 @@
                 },
             };
 
-            // Calculate and set optimal night sky container size
+            /**
+             * Calculate and set optimal night sky container size
+             *
+             * The .night-sky container must be large enough to cover the viewport
+             * during 360° rotation. It's positioned at the horizon (bottom of .hero)
+             * with transform-origin at center.
+             *
+             * Math: diagonal * 2.2 ensures corners stay offscreen during rotation
+             * - diagonal = distance from horizon to top corners
+             * - 2.2 = safety margin (sqrt(2) ≈ 1.41, but we need extra coverage)
+             * - Positioned with bottom: -containerSize/2 so center is at horizon
+             */
             function initializeNightSkySize() {
                 try {
                     const hero = document.querySelector(".hero");
@@ -485,6 +532,8 @@
                 for (let i = 0; i < numStars; i++) {
                     // Random position with bias toward top half (visible area)
                     const x = Math.random() * canvasWidth;
+                    // Math.pow(random, 1.5) biases toward 0, concentrating stars at top
+                    // where they're more visible (bottom half is partially below horizon)
                     const y = Math.pow(Math.random(), 1.5) * canvasHeight;
 
                     // Varied sizes
@@ -534,9 +583,10 @@
                         });
                     }
 
-                    // Generate binary companion star
+                    // Generate binary companion star (2.5% chance)
+                    // Binary pairs are positioned near each other in random direction
                     if (Math.random() < CONFIG.stars.binaryPercentage) {
-                        const angle = Math.random() * Math.PI * 2;
+                        const angle = Math.random() * Math.PI * 2; // Random direction
                         const separation =
                             CONFIG.stars.binarySeparationMin +
                             Math.random() *
@@ -544,8 +594,9 @@
                                     CONFIG.stars.binarySeparationMin);
                         const companionX = x + Math.cos(angle) * separation;
                         const companionY = y + Math.sin(angle) * separation;
+                        // Companion is typically smaller than primary (60-90%)
                         const companionSize =
-                            size * (0.6 + Math.random() * 0.3); // 60-90% of primary size
+                            size * (0.6 + Math.random() * 0.3);
 
                         if (isStatic) {
                             stars.push({
@@ -584,14 +635,17 @@
                 }
 
                 // Generate planets (static bright objects)
+                // Planets don't twinkle and are brighter than stars
                 planets = [];
                 CONFIG.planets.forEach((planet, index) => {
                     // Position planets at aesthetically pleasing locations
-                    // Spread them across the sky with some randomness
+                    // Evenly spaced horizontally with vertical randomness
+                    // Formula: divide canvas into (n+1) sections, place in section centers
                     const baseX =
                         (canvasWidth / (CONFIG.planets.length + 1)) *
                         (index + 1);
                     const baseY = canvasHeight * (0.2 + Math.random() * 0.4); // Top 60% of sky
+                    // Add 15% random offset for natural appearance
                     const offsetX = (Math.random() - 0.5) * canvasWidth * 0.15;
                     const offsetY = (Math.random() - 0.5) * canvasHeight * 0.15;
 
@@ -707,13 +761,16 @@
                         throw new Error("Could not get canvas context");
                     }
 
-                    // Set canvas size (will be updated in initializeCanvasSize)
+                    // Set canvas size with device pixel ratio for sharp rendering on retina
+                    // We scale the canvas buffer (width/height) by DPR, then scale context back
+                    // This gives us more pixels to work with without changing coordinate system
                     const nightSky = document.getElementById("nightSky");
                     if (nightSky) {
                         const rect = nightSky.getBoundingClientRect();
                         starCanvas.width = rect.width * window.devicePixelRatio;
                         starCanvas.height =
                             rect.height * window.devicePixelRatio;
+                        // Scale context so we can use logical pixels in drawing code
                         starCtx.scale(
                             window.devicePixelRatio,
                             window.devicePixelRatio,
@@ -737,7 +794,10 @@
             // Cache DOM elements with error handling
             let meteorsContainer, heroElement, heroDiagonal;
             let isShowerActive = false;
+            // Preset angles for consistent meteor trajectories (degrees, CSS rotation)
+            // Range: 130-165° = diagonal movement from top-right to bottom-left
             const METEOR_ANGLES = [130, 135, 140, 145, 150, 155, 160, 165];
+            // Distance tiers create depth by varying travel distance
             const DISTANCE_TIERS = ["short", "med", "long"];
 
             // Meteor timeout tracking for pause/resume
@@ -770,6 +830,16 @@
                 }
             }
 
+            /**
+             * Generate CSS @keyframes dynamically based on viewport size
+             *
+             * Why dynamic? Meteor travel distance depends on viewport diagonal,
+             * which varies with window size. We generate keyframes for each
+             * angle × distance combination (8 angles × 3 distances = 24 keyframes).
+             *
+             * This approach uses GPU-accelerated CSS animations instead of JS,
+             * while still being responsive to window size.
+             */
             function generateMeteorKeyframes() {
                 try {
                     if (!heroDiagonal) {
@@ -777,6 +847,7 @@
                         return;
                     }
 
+                    // Three distance tiers for visual depth (±25px from diagonal)
                     const distances = {
                         short: heroDiagonal - 25,
                         med: heroDiagonal,
@@ -1059,7 +1130,23 @@
                     }, CONFIG.performance.resizeDebounceMs);
                 });
 
-                // Visibility change handler for pause/resume
+                /**
+                 * Visibility change handler for pause/resume
+                 *
+                 * When tab is hidden:
+                 * - Pause all CSS animations (.paused class)
+                 * - Stop canvas rendering (cancelAnimationFrame)
+                 * - Clear all meteor timeouts to prevent memory leaks
+                 *
+                 * When tab becomes visible:
+                 * - Resume CSS animations
+                 * - Restart canvas rendering
+                 * - Clean up any orphaned meteor DOM elements
+                 * - Recreate meteor/shower timers from scratch
+                 *
+                 * This prevents unnecessary CPU/GPU usage when tab is hidden
+                 * and ensures animations don't desync after long periods hidden.
+                 */
                 document.addEventListener("visibilitychange", () => {
                     const nightSky = document.getElementById("nightSky");
                     const meteorsContainer =
