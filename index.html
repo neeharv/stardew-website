@@ -46,10 +46,10 @@
                 position: absolute;
                 top: 0;
                 left: 50%;
-                width: 300%;
-                height: 300%;
+                width: 200vw;
+                height: 200vw;
                 transform-origin: 50% 100%;
-                animation: rotateSky 300s linear infinite;
+                animation: rotateSky 900s linear infinite;
             }
 
             @keyframes rotateSky {
@@ -65,7 +65,7 @@
                 position: absolute;
                 background: white;
                 border-radius: 50%;
-                animation: twinkle 3s ease-in-out infinite;
+                animation: twinkle 6s ease-in-out infinite;
             }
 
             @keyframes twinkle {
@@ -73,7 +73,7 @@
                 100% {
                     opacity: 0.3;
                 }
-                50% {
+                30% {
                     opacity: 1;
                 }
             }
@@ -246,7 +246,7 @@
         <script>
             // Create fixed night sky stars
             const nightSky = document.getElementById("nightSky");
-            const numSkyStars = 150;
+            const numSkyStars = 300;
 
             for (let i = 0; i < numSkyStars; i++) {
                 const star = document.createElement("div");
@@ -262,7 +262,7 @@
                 star.style.height = size + "px";
 
                 // Varied animation delay for twinkling
-                star.style.animationDelay = Math.random() * 3 + "s";
+                star.style.animationDelay = Math.random() * 6 + "s";
                 star.style.animationDuration = 2 + Math.random() * 3 + "s";
 
                 nightSky.appendChild(star);
@@ -273,13 +273,28 @@
                 document.getElementById("meteorsContainer");
             let isShowerActive = false;
 
+            const heroWidth = document
+                .getElementsByClassName("hero")[0]
+                .getBoundingClientRect().width;
+
+            const heroHeight = document
+                .getElementsByClassName("hero")[0]
+                .getBoundingClientRect().height;
+
+            const heroDiagonal = Math.sqrt(heroWidth ** 2 + heroHeight ** 2);
+
             function createMeteor(baseAngle = null) {
                 const meteor = document.createElement("div");
                 meteor.className = "meteor";
 
                 // Start from top-right area, fall towards bottom-left
-                const startX = 100 - Math.random() * 20; // 100% to 40% (right side bias)
-                const startY = -10 + Math.random() * 50; // -10% to 40% (top bias)
+                const startX = 120 - Math.random() * 30; // 120% to 60% (right side bias)
+                let startY;
+                if (startX < 100) {
+                    // since we are starting from within the right side,
+                    // we want the y to start definitely above the top
+                    startY = -40 + Math.random() * 50;
+                } else startY = -10 + Math.random() * 50; // -10% to 40% (top bias)
                 meteor.style.left = startX + "%";
                 meteor.style.top = startY + "%";
 
@@ -296,11 +311,12 @@
                 if (baseAngle !== null) {
                     angle = baseAngle + (Math.random() * 30 - 15); // ±15° variation
                 } else {
-                    angle = 130 + Math.random() * 40; // 120-170 degrees
+                    angle = 130 + Math.random() * 30; // 120-170 degrees
                 }
 
                 // Calculate end position
-                const distance = 300 + Math.random() * 400;
+                const distance = heroDiagonal + Math.random(-0.5, 1.5) * 50;
+
                 const radians = (angle * Math.PI) / 180;
                 const endX = Math.cos(radians) * distance;
                 const endY = Math.sin(radians) * distance;
@@ -330,7 +346,7 @@
                 style.textContent = keyframes;
                 document.head.appendChild(style);
 
-                const duration = 1 + Math.random() * 2;
+                const duration = 4 + Math.random() * 2;
                 meteor.style.animation = `${animationName} ${duration}s linear forwards`;
 
                 meteorsContainer.appendChild(meteor);
@@ -345,8 +361,8 @@
                 if (isShowerActive) return;
 
                 isShowerActive = true;
-                const showerAngle = 130 + Math.random() * 40; // Base angle for shower
-                const numMeteors = 6 + Math.floor(Math.random() * 9); // 6-15 meteors
+                const showerAngle = 130 + Math.random() * 30; // Base angle for shower
+                const numMeteors = 6 + Math.floor(Math.random() * 6); // 6-12 meteors
 
                 for (let i = 0; i < numMeteors; i++) {
                     setTimeout(
@@ -378,7 +394,7 @@
             }
 
             // Start scattered single meteors
-            for (let i = 0; i < 3; i++) {
+            for (let i = 0; i < 2; i++) {
                 setTimeout(createSingleMeteor, Math.random() * 2000);
             }
 
