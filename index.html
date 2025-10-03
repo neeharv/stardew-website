@@ -18,13 +18,7 @@
             }
 
             body {
-                background: linear-gradient(
-                    to bottom,
-                    #0a0a1a 0%,
-                    #1a1a2e 40%,
-                    #2a2a2a 70%,
-                    #2a2a2a 100%
-                );
+                background: #0a0a1a;
                 color: white;
                 font-family: var(--font-mono);
                 min-height: 100vh;
@@ -40,15 +34,21 @@
                 padding: 40px 20px;
                 position: relative;
                 overflow: hidden;
+                background: linear-gradient(
+                    to bottom,
+                    #0a0a1a 0%,
+                    #0d0d24 40%,
+                    #12152e 85%,
+                    #1a1e32 100%
+                );
             }
 
             .night-sky {
                 position: absolute;
-                top: 0;
+                bottom: 0;
                 left: 50%;
-                width: 200vw;
-                height: 200vw;
-                transform-origin: 50% 100%;
+                /* Width, height, and bottom offset set dynamically by JavaScript */
+                transform-origin: 50% 50%;
                 animation: rotateSky 900s linear infinite;
                 will-change: transform;
                 transform: translate3d(-50%, 0, 0);
@@ -140,7 +140,7 @@
                 font-size: clamp(60px, 15vw, 180px);
                 font-weight: 900;
                 letter-spacing: 0.02em;
-                line-height: 0.9;
+                line-height: 1.1;
                 display: block;
             }
 
@@ -157,7 +157,13 @@
             }
 
             .content {
-                background-color: transparent;
+                background: linear-gradient(
+                    to bottom,
+                    #1f2238 0%,
+                    #282a38 30%,
+                    #2d2f3a 70%,
+                    #2d2f3a 100%
+                );
                 padding: 40px 20px 60px;
                 position: relative;
                 z-index: 4;
@@ -284,6 +290,40 @@
                 },
             };
 
+            // Calculate and set optimal night sky container size
+            function initializeNightSkySize() {
+                try {
+                    const hero = document.querySelector(".hero");
+                    const nightSky = document.getElementById("nightSky");
+
+                    if (!hero || !nightSky) {
+                        throw new Error("Hero or night sky element not found");
+                    }
+
+                    const heroRect = hero.getBoundingClientRect();
+                    const heroWidth = heroRect.width;
+                    const heroHeight = heroRect.height;
+
+                    // Calculate diagonal from horizon (bottom-center) to top corners
+                    const diagonal = Math.sqrt(
+                        (heroWidth / 2) ** 2 + heroHeight ** 2,
+                    );
+
+                    // Container rotates from center, positioned at horizon
+                    const containerSize = Math.ceil(diagonal * 2.2);
+
+                    // Apply dimensions and position center at horizon
+                    nightSky.style.width = `${containerSize}px`;
+                    nightSky.style.height = `${containerSize}px`;
+                    nightSky.style.bottom = `${-containerSize / 2}px`;
+                } catch (error) {
+                    console.error(
+                        "Failed to initialize night sky size:",
+                        error,
+                    );
+                }
+            }
+
             // Create fixed night sky stars with error handling
             function initializeStars() {
                 try {
@@ -299,9 +339,10 @@
                         const star = document.createElement("div");
                         star.className = "sky-star";
 
-                        // Random position
+                        // Random position with bias toward top half (visible area)
                         star.style.left = Math.random() * 100 + "%";
-                        star.style.top = Math.random() * 100 + "%";
+                        star.style.top =
+                            Math.pow(Math.random(), 1.5) * 100 + "%";
 
                         // Varied sizes
                         const size =
@@ -331,13 +372,15 @@
                 }
             }
 
+            // Initialize night sky size and stars
+            initializeNightSkySize();
             initializeStars();
 
             // Cache DOM elements with error handling
             let meteorsContainer, heroElement, heroDiagonal;
             let isShowerActive = false;
             const METEOR_ANGLES = [130, 135, 140, 145, 150, 155, 160, 165];
-            const DISTANCE_TIERS = ['short', 'med', 'long'];
+            const DISTANCE_TIERS = ["short", "med", "long"];
 
             function initializeMeteorSystem() {
                 try {
@@ -375,15 +418,15 @@
                     const distances = {
                         short: heroDiagonal - 25,
                         med: heroDiagonal,
-                        long: heroDiagonal + 25
+                        long: heroDiagonal + 25,
                     };
 
-                    let keyframesCSS = '';
+                    let keyframesCSS = "";
 
-                    METEOR_ANGLES.forEach(angle => {
+                    METEOR_ANGLES.forEach((angle) => {
                         const radians = (angle * Math.PI) / 180;
 
-                        DISTANCE_TIERS.forEach(tier => {
+                        DISTANCE_TIERS.forEach((tier) => {
                             const distance = distances[tier];
                             const endX = Math.cos(radians) * distance;
                             const endY = Math.sin(radians) * distance;
@@ -410,16 +453,20 @@
                     });
 
                     // Remove old keyframes if they exist
-                    const oldStyle = document.getElementById('meteor-keyframes');
+                    const oldStyle =
+                        document.getElementById("meteor-keyframes");
                     if (oldStyle) oldStyle.remove();
 
                     // Add new keyframes
-                    const style = document.createElement('style');
-                    style.id = 'meteor-keyframes';
+                    const style = document.createElement("style");
+                    style.id = "meteor-keyframes";
                     style.textContent = keyframesCSS;
                     document.head.appendChild(style);
                 } catch (error) {
-                    console.error("Failed to generate meteor keyframes:", error);
+                    console.error(
+                        "Failed to generate meteor keyframes:",
+                        error,
+                    );
                 }
             }
 
@@ -449,11 +496,15 @@
                 if (baseAngle !== null) {
                     // For meteor showers, find closest preset angle to baseAngle
                     return METEOR_ANGLES.reduce((prev, curr) =>
-                        Math.abs(curr - baseAngle) < Math.abs(prev - baseAngle) ? curr : prev
+                        Math.abs(curr - baseAngle) < Math.abs(prev - baseAngle)
+                            ? curr
+                            : prev,
                     );
                 } else {
                     // Random angle from preset pool
-                    return METEOR_ANGLES[Math.floor(Math.random() * METEOR_ANGLES.length)];
+                    return METEOR_ANGLES[
+                        Math.floor(Math.random() * METEOR_ANGLES.length)
+                    ];
                 }
             }
 
@@ -472,7 +523,10 @@
             }
 
             function selectMeteorAnimation(angle) {
-                const distanceTier = DISTANCE_TIERS[Math.floor(Math.random() * DISTANCE_TIERS.length)];
+                const distanceTier =
+                    DISTANCE_TIERS[
+                        Math.floor(Math.random() * DISTANCE_TIERS.length)
+                    ];
                 return `meteor-${angle}-${distanceTier}`;
             }
 
@@ -581,13 +635,19 @@
 
                 // Add resize listener with debouncing
                 let resizeTimeout;
-                window.addEventListener('resize', () => {
+                window.addEventListener("resize", () => {
                     clearTimeout(resizeTimeout);
                     resizeTimeout = setTimeout(() => {
+                        // Update night sky size
+                        initializeNightSkySize();
+
+                        // Update meteor system
                         const heroRect = heroElement.getBoundingClientRect();
                         const heroWidth = heroRect.width;
                         const heroHeight = heroRect.height;
-                        heroDiagonal = Math.sqrt(heroWidth ** 2 + heroHeight ** 2);
+                        heroDiagonal = Math.sqrt(
+                            heroWidth ** 2 + heroHeight ** 2,
+                        );
                         generateMeteorKeyframes();
                     }, 250);
                 });
