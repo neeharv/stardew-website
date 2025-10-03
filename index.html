@@ -244,6 +244,19 @@
                 border-bottom-color: white;
             }
 
+            .left-content a {
+                color: white;
+                text-decoration: none;
+                position: relative;
+                transition: color 0.3s ease;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            }
+
+            .left-content a:hover {
+                color: rgba(255, 255, 255, 0.8);
+                border-bottom-color: rgba(255, 255, 255, 0.6);
+            }
+
             @media (max-width: 768px) {
                 .content-wrapper {
                     grid-template-columns: 1fr;
@@ -273,8 +286,19 @@
             <div class="content-wrapper">
                 <div class="left-content">
                     <p>
-                        Ignition is imminent. We (Neehar + Tara) are cooking up
-                        something new – watch this space!
+                        Ignition is imminent. We (<a
+                            href="https://www.linkedin.com/in/neehar-venugopal/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            >Neehar</a
+                        >
+                        +
+                        <a
+                            href="https://www.linkedin.com/in/priyanka-singh-075981bb/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            >Tara</a
+                        >) are cooking up something new – watch this space!
                     </p>
                 </div>
                 <div class="right-content">
