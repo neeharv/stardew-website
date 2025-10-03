@@ -680,9 +680,14 @@
 
                     meteorsContainer.appendChild(meteor);
 
-                    setTimeout(() => {
+                    // Track cleanup timeout so it can be cleared when page is hidden
+                    const cleanupTimeoutId = setTimeout(() => {
                         try {
-                            if (meteor.parentNode) meteor.remove();
+                            // Only cleanup if page is still visible
+                            // If hidden, meteors will be cleaned up on visibility change
+                            if (isPageVisible && meteor.parentNode) {
+                                meteor.remove();
+                            }
                         } catch (cleanupError) {
                             console.warn(
                                 "Error during meteor cleanup:",
@@ -690,6 +695,7 @@
                             );
                         }
                     }, duration * 1000);
+                    activeMeteorTimeouts.push(cleanupTimeoutId);
                 } catch (error) {
                     console.error("Error creating meteor:", error);
                 }
@@ -838,6 +844,12 @@
 
                         // Reset shower state since all timeouts were cleared when hidden
                         isShowerActive = false;
+
+                        // Clean up old meteors whose cleanup timeouts were cleared
+                        if (meteorsContainer) {
+                            const oldMeteors = meteorsContainer.querySelectorAll(".meteor");
+                            oldMeteors.forEach(meteor => meteor.remove());
+                        }
 
                         // Resume canvas rendering
                         if (!animationFrameId) {
