@@ -72,6 +72,14 @@
                 will-change: opacity;
             }
 
+            .paused {
+                animation-play-state: paused !important;
+            }
+
+            .paused * {
+                animation-play-state: paused !important;
+            }
+
             .meteors-container {
                 position: absolute;
                 top: 0;
@@ -424,6 +432,11 @@
             const METEOR_ANGLES = [130, 135, 140, 145, 150, 155, 160, 165];
             const DISTANCE_TIERS = ["short", "med", "long"];
 
+            // Visibility tracking for pause/resume
+            let isPageVisible = !document.hidden;
+            let activeMeteorTimeouts = [];
+            let activeShowerTimeouts = [];
+
             function initializeMeteorSystem() {
                 try {
                     meteorsContainer =
@@ -613,7 +626,7 @@
             }
 
             function triggerMeteorShower() {
-                if (isShowerActive) return;
+                if (isShowerActive || !isPageVisible) return;
 
                 isShowerActive = true;
                 const showerAngle =
@@ -630,9 +643,9 @@
                     );
 
                 for (let i = 0; i < numMeteors; i++) {
-                    setTimeout(
+                    const timeoutId = setTimeout(
                         () => {
-                            createMeteor(showerAngle);
+                            if (isPageVisible) createMeteor(showerAngle);
                         },
                         i *
                             (CONFIG.meteors.showerIntervalMin +
@@ -640,34 +653,40 @@
                                     (CONFIG.meteors.showerIntervalMax -
                                         CONFIG.meteors.showerIntervalMin)),
                     );
+                    activeShowerTimeouts.push(timeoutId);
                 }
 
-                setTimeout(
+                const cleanupTimeoutId = setTimeout(
                     () => {
                         isShowerActive = false;
                         scheduleNextShower();
                     },
                     numMeteors * 250 + 2000,
                 );
+                activeShowerTimeouts.push(cleanupTimeoutId);
             }
 
             function scheduleNextShower() {
+                if (!isPageVisible) return;
                 const nextShowerIn =
                     CONFIG.meteors.nextShowerMin +
                     Math.random() *
                         (CONFIG.meteors.nextShowerMax -
                             CONFIG.meteors.nextShowerMin);
-                setTimeout(triggerMeteorShower, nextShowerIn);
+                const timeoutId = setTimeout(triggerMeteorShower, nextShowerIn);
+                activeShowerTimeouts.push(timeoutId);
             }
 
             function createSingleMeteor() {
+                if (!isPageVisible) return;
                 createMeteor();
                 const nextMeteorIn =
                     CONFIG.meteors.singleMeteorIntervalMin +
                     Math.random() *
                         (CONFIG.meteors.singleMeteorIntervalMax -
                             CONFIG.meteors.singleMeteorIntervalMin);
-                setTimeout(createSingleMeteor, nextMeteorIn);
+                const timeoutId = setTimeout(createSingleMeteor, nextMeteorIn);
+                activeMeteorTimeouts.push(timeoutId);
             }
 
             // Initialize meteor system and start animations
@@ -710,6 +729,40 @@
                         );
                         generateMeteorKeyframes();
                     }, 250);
+                });
+
+                // Visibility change handler for pause/resume
+                document.addEventListener("visibilitychange", () => {
+                    const nightSky = document.getElementById("nightSky");
+                    const meteorsContainer = document.getElementById("meteorsContainer");
+
+                    if (document.hidden) {
+                        // Page is hidden - pause animations
+                        isPageVisible = false;
+                        if (nightSky) nightSky.classList.add("paused");
+                        if (meteorsContainer) meteorsContainer.classList.add("paused");
+
+                        // Clear all pending meteor timeouts
+                        activeMeteorTimeouts.forEach(clearTimeout);
+                        activeShowerTimeouts.forEach(clearTimeout);
+                        activeMeteorTimeouts = [];
+                        activeShowerTimeouts = [];
+                    } else {
+                        // Page is visible - resume animations
+                        isPageVisible = true;
+                        if (nightSky) nightSky.classList.remove("paused");
+                        if (meteorsContainer) meteorsContainer.classList.remove("paused");
+
+                        // Restart meteor creation
+                        if (!isShowerActive) {
+                            // Restart single meteors
+                            for (let i = 0; i < 2; i++) {
+                                setTimeout(createSingleMeteor, Math.random() * 2000);
+                            }
+                            // Restart showers
+                            setTimeout(triggerMeteorShower, 2000 + Math.random() * 2000);
+                        }
+                    }
                 });
 
                 // Start scattered single meteors
