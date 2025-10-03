@@ -292,6 +292,15 @@
                     singleMeteorIntervalMax: 5500,
                     nextShowerMin: 3000,
                     nextShowerMax: 8000,
+                    singleMeteorStreamCount: 2,
+                    initialMeteorDelayMax: 2000,
+                    initialShowerDelayMin: 2000,
+                    initialShowerDelayMax: 4000,
+                    showerCleanupDelayPerMeteor: 250,
+                    showerCleanupDelayBase: 2000,
+                },
+                performance: {
+                    resizeDebounceMs: 250,
                 },
             };
 
@@ -661,7 +670,7 @@
                         isShowerActive = false;
                         scheduleNextShower();
                     },
-                    numMeteors * 250 + 2000,
+                    numMeteors * CONFIG.meteors.showerCleanupDelayPerMeteor + CONFIG.meteors.showerCleanupDelayBase,
                 );
                 activeShowerTimeouts.push(cleanupTimeoutId);
             }
@@ -728,7 +737,7 @@
                             heroWidth ** 2 + heroHeight ** 2,
                         );
                         generateMeteorKeyframes();
-                    }, 250);
+                    }, CONFIG.performance.resizeDebounceMs);
                 });
 
                 // Visibility change handler for pause/resume
@@ -756,22 +765,30 @@
                         // Restart meteor creation
                         if (!isShowerActive) {
                             // Restart single meteors
-                            for (let i = 0; i < 2; i++) {
-                                setTimeout(createSingleMeteor, Math.random() * 2000);
+                            for (let i = 0; i < CONFIG.meteors.singleMeteorStreamCount; i++) {
+                                setTimeout(createSingleMeteor, Math.random() * CONFIG.meteors.initialMeteorDelayMax);
                             }
                             // Restart showers
-                            setTimeout(triggerMeteorShower, 2000 + Math.random() * 2000);
+                            setTimeout(
+                                triggerMeteorShower,
+                                CONFIG.meteors.initialShowerDelayMin +
+                                    Math.random() * (CONFIG.meteors.initialShowerDelayMax - CONFIG.meteors.initialShowerDelayMin)
+                            );
                         }
                     }
                 });
 
                 // Start scattered single meteors
-                for (let i = 0; i < 2; i++) {
-                    setTimeout(createSingleMeteor, Math.random() * 2000);
+                for (let i = 0; i < CONFIG.meteors.singleMeteorStreamCount; i++) {
+                    setTimeout(createSingleMeteor, Math.random() * CONFIG.meteors.initialMeteorDelayMax);
                 }
 
                 // Start first meteor shower
-                setTimeout(triggerMeteorShower, 2000 + Math.random() * 2000);
+                setTimeout(
+                    triggerMeteorShower,
+                    CONFIG.meteors.initialShowerDelayMin +
+                        Math.random() * (CONFIG.meteors.initialShowerDelayMax - CONFIG.meteors.initialShowerDelayMin)
+                );
             }
         </script>
     </body>
