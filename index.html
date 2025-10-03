@@ -249,7 +249,9 @@
             // Configuration object
             const CONFIG = {
                 stars: {
-                    count: 300,
+                    countDesktop: 300,
+                    countMobile: 150,
+                    mobileBreakpoint: 768,
                     maxSize: 3,
                     minSize: 1,
                     animationDelayMax: 6,
@@ -319,6 +321,13 @@
                 }
             }
 
+            // Get appropriate star count based on device width
+            function getStarCount() {
+                return window.innerWidth < CONFIG.stars.mobileBreakpoint
+                    ? CONFIG.stars.countMobile
+                    : CONFIG.stars.countDesktop;
+            }
+
             // Generate twinkle keyframes dynamically from CONFIG
             function generateTwinkleKeyframes() {
                 try {
@@ -355,7 +364,7 @@
                         throw new Error("Night sky element not found");
                     }
 
-                    const numSkyStars = CONFIG.stars.count;
+                    const numSkyStars = getStarCount();
                     const fragment = document.createDocumentFragment();
 
                     for (let i = 0; i < numSkyStars; i++) {
@@ -666,6 +675,9 @@
                 // Generate keyframes once
                 generateMeteorKeyframes();
 
+                // Track current star count for breakpoint detection
+                let currentStarCount = getStarCount();
+
                 // Add resize listener with debouncing
                 let resizeTimeout;
                 window.addEventListener("resize", () => {
@@ -673,6 +685,21 @@
                     resizeTimeout = setTimeout(() => {
                         // Update night sky size
                         initializeNightSkySize();
+
+                        // Check if we crossed the mobile breakpoint
+                        const newStarCount = getStarCount();
+                        if (newStarCount !== currentStarCount) {
+                            currentStarCount = newStarCount;
+                            // Regenerate stars with new count
+                            const nightSky = document.getElementById("nightSky");
+                            if (nightSky) {
+                                // Remove old stars
+                                const oldStars = nightSky.querySelectorAll(".sky-star");
+                                oldStars.forEach(star => star.remove());
+                                // Regenerate with new count
+                                initializeStars();
+                            }
+                        }
 
                         // Update meteor system
                         const heroRect = heroElement.getBoundingClientRect();
