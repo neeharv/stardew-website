@@ -298,17 +298,35 @@
                 </clipPath>
                 <!-- Base stroke gradient: subtle at edges, bright at center -->
                 <linearGradient id="horizonStrokeGradient" x1="0%" x2="100%">
-                    <stop offset="0%" stop-color="rgba(255,255,255,var(--horizon-edge-opacity))" />
-                    <stop offset="35%" stop-color="rgba(255,255,255,var(--horizon-edge-opacity))" />
-                    <stop offset="50%" stop-color="rgba(255,255,255,var(--horizon-center-opacity))" />
-                    <stop offset="65%" stop-color="rgba(255,255,255,var(--horizon-edge-opacity))" />
-                    <stop offset="100%" stop-color="rgba(255,255,255,var(--horizon-edge-opacity))" />
+                    <stop
+                        offset="0%"
+                        stop-color="rgba(255,255,255,var(--horizon-edge-opacity))"
+                    />
+                    <stop
+                        offset="35%"
+                        stop-color="rgba(255,255,255,var(--horizon-edge-opacity))"
+                    />
+                    <stop
+                        offset="50%"
+                        stop-color="rgba(255,255,255,var(--horizon-center-opacity))"
+                    />
+                    <stop
+                        offset="65%"
+                        stop-color="rgba(255,255,255,var(--horizon-edge-opacity))"
+                    />
+                    <stop
+                        offset="100%"
+                        stop-color="rgba(255,255,255,var(--horizon-edge-opacity))"
+                    />
                 </linearGradient>
                 <!-- Center glow gradient: only visible in middle 40-60% -->
                 <linearGradient id="horizonCenterGlow" x1="0%" x2="100%">
                     <stop offset="0%" stop-color="rgba(255,255,255,0)" />
                     <stop offset="40%" stop-color="rgba(255,255,255,0.6)" />
-                    <stop offset="50%" stop-color="rgba(255,255,255,var(--horizon-center-opacity))" />
+                    <stop
+                        offset="50%"
+                        stop-color="rgba(255,255,255,var(--horizon-center-opacity))"
+                    />
                     <stop offset="60%" stop-color="rgba(255,255,255,0.6)" />
                     <stop offset="100%" stop-color="rgba(255,255,255,0)" />
                 </linearGradient>
@@ -411,8 +429,8 @@
             // Configuration object
             const CONFIG = {
                 stars: {
-                    countDesktop: 1000,
-                    countMobile: 500,
+                    countDesktop: 1200,
+                    countMobile: 800,
                     mobileBreakpoint: 768,
                     maxSize: 3,
                     minSize: 1,
