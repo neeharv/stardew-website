@@ -355,7 +355,10 @@ function scheduleNextShower() {
  */
 function createSingleMeteor() {
   if (!isPageVisible) return;
-  createMeteor();
+  // Skip creating regular meteors during showers to prevent path overlap
+  if (!isShowerActive) {
+    createMeteor();
+  }
   const nextMeteorIn =
     CONFIG.meteors.singleMeteorIntervalMin +
     Math.random() *
