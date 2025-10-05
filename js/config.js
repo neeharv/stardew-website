@@ -1,7 +1,16 @@
+/**
+ * @fileoverview Configuration module - All tweakable constants
+ * @module config
+ * @exports {CONFIG} - Frozen configuration object
+ * @imports None
+ * @description Centralized configuration for all animation systems.
+ *   All magic numbers and tunable parameters live here.
+ */
+
 // ============================================================
 // CONFIGURATION - All tweakable constants
 // Purpose: Centralized configuration for easy tuning
-// Lines: 1-200
+// Lines: 1-296
 // ============================================================
 
 /**
@@ -48,7 +57,6 @@
  * @property {number} startYMax - Maximum start Y position as percentage
  * @property {number} angleMin - Minimum trajectory angle in degrees
  * @property {number} angleMax - Maximum trajectory angle in degrees
- * @property {number} angleVariation - Angle variation (currently unused)
  * @property {number} durationMin - Minimum animation duration in seconds
  * @property {number} durationMax - Maximum animation duration in seconds
  * @property {number} showerCountMin - Minimum meteors per shower
@@ -105,7 +113,7 @@
 export const CONFIG = {
   // ============================================================
   // STAR SYSTEM CONFIGURATION
-  // Lines: 110-150
+  // Lines: 118-175
   // ============================================================
   stars: {
     // Star count based on device capabilities
@@ -167,7 +175,7 @@ export const CONFIG = {
 
   // ============================================================
   // PLANET CONFIGURATION
-  // Lines: 151-180
+  // Lines: 176-213
   // ============================================================
   // Planets are rendered as bright, non-twinkling points
   // Names are for reference only (not displayed to user)
@@ -206,7 +214,7 @@ export const CONFIG = {
 
   // ============================================================
   // METEOR SYSTEM CONFIGURATION
-  // Lines: 181-220
+  // Lines: 214-260
   // ============================================================
   meteors: {
     // Start positions in percentage (can be outside viewport)
@@ -223,7 +231,6 @@ export const CONFIG = {
     // Trajectory angles
     angleMin: 130, // Diagonal down-left (degrees)
     angleMax: 160, // Steeper down-left
-    angleVariation: 15, // Not currently used
 
     // Animation durations
     durationMin: 4, // Seconds for meteor animation
@@ -254,7 +261,7 @@ export const CONFIG = {
 
   // ============================================================
   // AURORA CONFIGURATION
-  // Lines: 221-230
+  // Lines: 261-270
   // ============================================================
   aurora: {
     enabled: false, // Disabled by default - CSS renderer ready to enable
@@ -263,7 +270,7 @@ export const CONFIG = {
 
   // ============================================================
   // PERFORMANCE CONFIGURATION
-  // Lines: 231-240
+  // Lines: 271-278
   // ============================================================
   performance: {
     resizeDebounceMs: 250, // Debounce delay for resize events
@@ -271,7 +278,7 @@ export const CONFIG = {
 
   // ============================================================
   // NIGHT SKY CONTAINER CONFIGURATION
-  // Lines: 241-250
+  // Lines: 279-287
   // ============================================================
   nightSky: {
     diagonalMultiplier: 2.2, // Multiplier for container size (covers rotation)
@@ -280,7 +287,7 @@ export const CONFIG = {
 
   // ============================================================
   // CANVAS RENDERING CONFIGURATION
-  // Lines: 251-260
+  // Lines: 288-296
   // ============================================================
   canvas: {
     devicePixelRatioEnabled: true, // Use device pixel ratio for retina displays
