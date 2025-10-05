@@ -102,7 +102,7 @@
  */
 
 /** @type {Config} */
-const CONFIG = {
+export const CONFIG = {
   // ============================================================
   // STAR SYSTEM CONFIGURATION
   // Lines: 110-150
@@ -287,6 +287,3 @@ const CONFIG = {
     contextType: "2d", // Canvas context type
   },
 };
-
-// Make CONFIG available globally
-window.CONFIG = CONFIG;
