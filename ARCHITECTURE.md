@@ -444,11 +444,11 @@ Actions:
 - No dropped frames during resize
 - Instant pause/resume on visibility change
 
-**Resource Usage**:
+**Resource Usage** (not yet profiled - needs validation):
 
-- Canvas: ~1-2% CPU on modern desktop
-- Meteors: <1% CPU (GPU-accelerated CSS)
-- Memory: ~5-10MB total (mostly canvas buffer)
+- Canvas: Unknown CPU usage (requires profiling with Performance API)
+- Meteors: Unknown CPU usage (GPU-accelerated CSS, likely minimal)
+- Memory: Estimated ~5-10MB total (mostly canvas buffer, needs measurement)
 
 **Optimization Trade-offs**:
 
@@ -680,15 +680,209 @@ If adding click/touch interactivity:
 
 ---
 
+## Immediate Optimization Opportunities
+
+These optimizations provide significant benefit with minimal complexity, aligned with the "no build process" philosophy:
+
+### 1. Layered Canvas for Static Stars (Priority: High)
+
+**Problem**: Currently redraws all 1200 stars every frame, including 360 static stars (30%) that never change opacity (stars.js:238-246).
+
+**Current overhead**:
+
+```
+1200 stars × 60fps = 72,000 arc draws per second
+```
+
+**Optimized approach**:
+
+```
+Layer 1 (static canvas): 360 stars drawn once on init/resize only
+Layer 2 (twinkling canvas): 840 stars × 60fps = 50,400 draws/sec
+= 30% reduction in renderStars() overhead
+```
+
+**Implementation**:
+
+- Create two stacked `<canvas>` elements with z-index
+- Render static stars (star.isStatic === true) to background canvas
+- Only redraw background canvas on resize
+- Keep twinkling stars on existing animation loop
+
+**Complexity**: ~50 lines of code, no new dependencies
+
+**Benefits**:
+
+- 30-40% reduction in canvas rendering work
+- No browser compatibility concerns
+- Easy to debug (source inspection shows both layers)
+- Maintains current architecture patterns
+
+### 2. CSS Custom Properties for Meteor Keyframes (Priority: High)
+
+**Problem**: Regenerating 24 `@keyframes` rules on every resize causes style recalculation (meteors.js:94-151).
+
+**Current approach**:
+
+```javascript
+// Every resize: remove old <style>, generate new @keyframes
+@keyframes meteor-145-med {
+  100% { transform: translate3d(423px, 567px, 0) rotate(145deg); }
+}
+```
+
+**Optimized approach**:
+
+```css
+/* Static keyframes defined once */
+@keyframes meteor-145-med {
+  100% {
+    transform: translate3d(var(--meteor-145-med-x), var(--meteor-145-med-y), 0)
+      rotate(145deg);
+  }
+}
+```
+
+```javascript
+// On resize: just update CSS custom properties
+document.documentElement.style.setProperty("--meteor-145-med-x", `${endX}px`);
+document.documentElement.style.setProperty("--meteor-145-med-y", `${endY}px`);
+```
+
+**Benefits**:
+
+- Eliminates DOM thrashing from removing/adding `<style>` tags
+- Reduces resize handler complexity
+- Faster resize response (no CSSOM rebuild)
+- Cleaner separation of static definitions vs dynamic values
+
+**Complexity**: Refactor existing function, add static CSS file
+
+### 3. Add Performance Profiling (Priority: High)
+
+**Problem**: Current "Resource Usage" metrics are unvalidated assumptions (ARCHITECTURE.md:447-451).
+
+**Implementation**:
+
+```javascript
+// Add to stars.js renderStars()
+if (performance.measure && CONFIG.debug?.enableProfiling) {
+  performance.mark("render-stars-start");
+  // ... rendering code ...
+  performance.mark("render-stars-end");
+  performance.measure("render-stars", "render-stars-start", "render-stars-end");
+}
+```
+
+**Collect metrics for**:
+
+- Canvas render time per frame (should be <16ms for 60fps)
+- Memory usage (performance.memory API in Chrome)
+- Actual CPU usage patterns under various loads
+- Frame drops during resize events
+
+**Benefits**:
+
+- Data-driven optimization decisions
+- Establishes baseline for measuring improvements
+- Can expose unexpected bottlenecks
+- Useful for debugging performance regressions
+
+### 4. Image Asset Optimization (Priority: Medium)
+
+**Current**:
+
+- `og-image.jpg` (76KB) + `twitter-image.jpg` (75KB) = 151KB total
+
+**Optimized**:
+
+```html
+<meta property="og:image" content="/og-image.webp" />
+<meta property="twitter:image" content="/twitter-image.webp" />
+```
+
+**Benefits**:
+
+- ~50KB reduction in total page weight
+- Faster social media preview loads
+- Better Lighthouse scores
+
+**Complexity**: Convert images, update HTML
+
+### 5. Batch Twinkle Opacity Calculations (Priority: Low)
+
+**Current**: `getTwinkleOpacity()` called per-star per-frame with same `currentTime` (stars.js:202-214).
+
+**Optimization**: Calculate time-dependent values once per frame:
+
+```javascript
+const frameTime = performance.now();
+const elapsed = frameTime - startTime;
+
+stars.forEach((star) => {
+  if (star.isStatic) {
+    // ... static rendering
+  } else {
+    // Use pre-calculated elapsed instead of recalculating
+    const cyclePosition =
+      ((elapsed - star.twinkleDelay) % star.twinkleDuration) /
+      star.twinkleDuration;
+    // ...
+  }
+});
+```
+
+**Benefits**: Minor reduction in redundant calculations (unlikely to be measurable)
+
+---
+
 ## Future Optimization Opportunities
 
+These optimizations are more complex and should only be pursued if profiling reveals specific bottlenecks or new requirements emerge:
+
+### When to Consider These
+
+- **Offscreen Canvas / Web Worker**: If main thread jank appears during heavy JS execution
+- **WebGL**: If star count needs to exceed 5000+
+- **Variable frame rate**: If profiling shows consistent >16ms frame times on target devices
+
+### Optimizations List
+
 1. **Offscreen Canvas**: Move star rendering to Web Worker
+   - **Complexity**: High (message passing, OffscreenCanvas API, debugging)
+   - **Benefit**: Complete main-thread isolation
+   - **Trade-off**: 80% of benefit already achieved with layered canvas
+   - **When**: Only if layered canvas + profiling shows main-thread contention
+
 2. **Intersection Observer**: Pause animations when viewport scrolled away
+   - **Complexity**: Low (simple observer setup)
+   - **Benefit**: Saves resources when hero scrolled out of view
+   - **When**: If page grows beyond single viewport
+
 3. **WebGL**: Switch from 2D canvas to WebGL for thousands more stars
+   - **Complexity**: High (complete rewrite of rendering)
+   - **Benefit**: 10,000+ stars possible
+   - **When**: Requirements change to need dramatically more stars
+
 4. **Lazy load**: Delay meteor system init until hero in viewport
+   - **Complexity**: Medium (intersection observer + deferred init)
+   - **Benefit**: Slightly faster initial page load
+   - **When**: JavaScript bundle grows significantly
+
 5. **Prefers-reduced-motion**: Respect user's motion preferences
+   - **Complexity**: Low (CSS media query)
+   - **Benefit**: Accessibility improvement
+   - **When**: Should be implemented regardless (accessibility best practice)
+
 6. **Variable frame rate**: Reduce to 30fps on low-end devices
+   - **Complexity**: Medium (device detection, frame skipping logic)
+   - **Benefit**: Better performance on constrained devices
+   - **When**: Profiling shows consistent frame drops on target devices
+
 7. **Shooting star trails**: Add WebGL-based persistent trails
+   - **Complexity**: High (WebGL implementation)
+   - **Benefit**: Visual enhancement
+   - **When**: Feature request with established performance baseline
 
 ---
 
