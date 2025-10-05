@@ -121,6 +121,10 @@
                 animation-play-state: paused !important;
             }
 
+            .aurora-container.paused .aurora-band {
+                animation-play-state: paused !important;
+            }
+
             .meteors-container {
                 position: absolute;
                 top: 0;
@@ -165,6 +169,241 @@
                 );
                 transform: translateY(-50%);
                 filter: blur(0.5px);
+            }
+
+            .aurora-container {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 25vh;
+                pointer-events: none;
+                z-index: 1;
+                overflow: visible;
+                mask-image: linear-gradient(
+                    to top,
+                    black 0%,
+                    black 40%,
+                    transparent 100%
+                );
+                -webkit-mask-image: linear-gradient(
+                    to top,
+                    black 0%,
+                    black 40%,
+                    transparent 100%
+                );
+            }
+
+            .aurora-band {
+                position: absolute;
+                bottom: 0;
+                left: -10%;
+                width: 120%;
+                height: 100%;
+                opacity: 0.15;
+                will-change: transform, opacity, filter;
+                mix-blend-mode: screen;
+                filter: blur(35px);
+            }
+
+            @media (max-width: 768px) {
+                .aurora-band {
+                    filter: blur(15px);
+                }
+            }
+
+            .aurora-band-1 {
+                background:
+                    radial-gradient(
+                        ellipse 22% 155% at 3% 50%,
+                        rgba(100, 255, 180, 0.35) 0%,
+                        rgba(100, 255, 180, 0.14) 42%,
+                        transparent 72%
+                    ),
+                    radial-gradient(
+                        ellipse 25% 150% at 22% 50%,
+                        rgba(80, 255, 150, 0.38) 0%,
+                        rgba(80, 255, 150, 0.16) 40%,
+                        transparent 70%
+                    ),
+                    radial-gradient(
+                        ellipse 30% 140% at 48% 50%,
+                        rgba(120, 255, 200, 0.36) 0%,
+                        rgba(120, 255, 200, 0.15) 35%,
+                        transparent 65%
+                    ),
+                    radial-gradient(
+                        ellipse 28% 160% at 75% 50%,
+                        rgba(90, 255, 170, 0.32) 0%,
+                        rgba(90, 255, 170, 0.13) 38%,
+                        transparent 68%
+                    ),
+                    radial-gradient(
+                        ellipse 24% 148% at 95% 50%,
+                        rgba(110, 255, 190, 0.34) 0%,
+                        rgba(110, 255, 190, 0.14) 40%,
+                        transparent 70%
+                    );
+                animation:
+                    auroraWave1 25s ease-in-out infinite,
+                    auroraShimmer1 15s ease-in-out infinite;
+                transform-origin: bottom center;
+            }
+
+            .aurora-band-2 {
+                background:
+                    radial-gradient(
+                        ellipse 26% 150% at 8% 50%,
+                        rgba(0, 255, 200, 0.3) 0%,
+                        rgba(0, 255, 200, 0.12) 40%,
+                        transparent 70%
+                    ),
+                    radial-gradient(
+                        ellipse 32% 155% at 32% 50%,
+                        rgba(20, 255, 220, 0.32) 0%,
+                        rgba(20, 255, 220, 0.13) 42%,
+                        transparent 72%
+                    ),
+                    radial-gradient(
+                        ellipse 28% 145% at 62% 50%,
+                        rgba(40, 255, 210, 0.3) 0%,
+                        rgba(40, 255, 210, 0.12) 38%,
+                        transparent 68%
+                    ),
+                    radial-gradient(
+                        ellipse 26% 135% at 90% 50%,
+                        rgba(30, 255, 215, 0.28) 0%,
+                        rgba(30, 255, 215, 0.11) 40%,
+                        transparent 70%
+                    );
+                animation:
+                    auroraWave2 30s ease-in-out infinite,
+                    auroraShimmer2 18s ease-in-out infinite;
+                transform-origin: bottom center;
+            }
+
+            .aurora-band-3 {
+                background:
+                    radial-gradient(
+                        ellipse 25% 145% at 5% 50%,
+                        rgba(150, 255, 100, 0.28) 0%,
+                        rgba(150, 255, 100, 0.11) 40%,
+                        transparent 70%
+                    ),
+                    radial-gradient(
+                        ellipse 24% 138% at 18% 50%,
+                        rgba(180, 255, 130, 0.26) 0%,
+                        rgba(180, 255, 130, 0.1) 42%,
+                        transparent 72%
+                    ),
+                    radial-gradient(
+                        ellipse 30% 148% at 42% 50%,
+                        rgba(140, 255, 110, 0.3) 0%,
+                        rgba(140, 255, 110, 0.12) 40%,
+                        transparent 70%
+                    ),
+                    radial-gradient(
+                        ellipse 27% 142% at 68% 50%,
+                        rgba(160, 255, 120, 0.28) 0%,
+                        rgba(160, 255, 120, 0.11) 38%,
+                        transparent 68%
+                    ),
+                    radial-gradient(
+                        ellipse 26% 150% at 92% 50%,
+                        rgba(170, 255, 125, 0.29) 0%,
+                        rgba(170, 255, 125, 0.115) 40%,
+                        transparent 70%
+                    );
+                animation:
+                    auroraWave3 35s ease-in-out infinite,
+                    auroraShimmer3 20s ease-in-out infinite;
+                transform-origin: bottom center;
+            }
+
+            @keyframes auroraWave1 {
+                0%,
+                100% {
+                    transform: translateX(0%) scaleX(1) scaleY(1) skewX(0deg)
+                        rotate(0deg);
+                }
+                25% {
+                    transform: translateX(-5%) scaleX(1.08) scaleY(0.95)
+                        skewX(-2deg) rotate(-1deg);
+                }
+                50% {
+                    transform: translateX(3%) scaleX(0.95) scaleY(1.05)
+                        skewX(1deg) rotate(0.5deg);
+                }
+                75% {
+                    transform: translateX(4%) scaleX(1.02) scaleY(0.98)
+                        skewX(2deg) rotate(1deg);
+                }
+            }
+
+            @keyframes auroraWave2 {
+                0%,
+                100% {
+                    transform: translateX(0%) scaleX(1) scaleY(1) skewX(0deg)
+                        rotate(0deg);
+                }
+                30% {
+                    transform: translateX(6%) scaleX(0.96) scaleY(1.04)
+                        skewX(3deg) rotate(1.5deg);
+                }
+                60% {
+                    transform: translateX(-4%) scaleX(1.05) scaleY(0.97)
+                        skewX(-1deg) rotate(-0.5deg);
+                }
+                90% {
+                    transform: translateX(2%) scaleX(1) scaleY(1) skewX(1deg)
+                        rotate(0.5deg);
+                }
+            }
+
+            @keyframes auroraWave3 {
+                0%,
+                100% {
+                    transform: translateX(0%) scaleX(1) scaleY(1) skewX(0deg)
+                        rotate(0deg);
+                }
+                33% {
+                    transform: translateX(-6%) scaleX(1.06) scaleY(1.02)
+                        skewX(-3deg) rotate(-1.5deg);
+                }
+                66% {
+                    transform: translateX(5%) scaleX(0.94) scaleY(0.96)
+                        skewX(2deg) rotate(1deg);
+                }
+            }
+
+            @keyframes auroraShimmer1 {
+                0%,
+                100% {
+                    opacity: 0.12;
+                }
+                50% {
+                    opacity: 0.18;
+                }
+            }
+
+            @keyframes auroraShimmer2 {
+                0%,
+                100% {
+                    opacity: 0.13;
+                }
+                50% {
+                    opacity: 0.17;
+                }
+            }
+
+            @keyframes auroraShimmer3 {
+                0%,
+                100% {
+                    opacity: 0.14;
+                }
+                50% {
+                    opacity: 0.16;
+                }
             }
 
             .logo-container {
@@ -336,6 +575,11 @@
         <div class="hero">
             <div class="night-sky" id="nightSky">
                 <canvas id="starCanvas"></canvas>
+            </div>
+            <div class="aurora-container" id="auroraContainer">
+                <div class="aurora-band aurora-band-1"></div>
+                <div class="aurora-band aurora-band-2"></div>
+                <div class="aurora-band aurora-band-3"></div>
             </div>
             <div class="meteors-container" id="meteorsContainer"></div>
             <div class="logo-container">
@@ -539,6 +783,10 @@
                     showerCleanupDelayPerMeteor: 250, // Grace period before next shower
                     showerCleanupDelayBase: 2000,
                 },
+                aurora: {
+                    enabled: false, // Disabled in production - CSS renderer ready to enable
+                    lowEndCpuCores: 4, // Hide aurora on devices with fewer CPU cores
+                },
                 performance: {
                     resizeDebounceMs: 250,
                 },
@@ -596,6 +844,22 @@
                     : CONFIG.stars.countDesktop;
             }
 
+            // Detect low-end devices based on CPU cores
+            // Low-end devices will have aurora disabled for performance
+            function isLowEndDevice() {
+                // Check CPU cores (most reliable indicator)
+                const cpuCores = navigator.hardwareConcurrency || 2;
+                if (cpuCores < CONFIG.aurora.lowEndCpuCores) {
+                    return true;
+                }
+
+                // Check device memory if available (in GB)
+                if (navigator.deviceMemory && navigator.deviceMemory < 4) {
+                    return true;
+                }
+
+                return false;
+            }
             // Canvas-based star rendering
             let starCanvas,
                 starCtx,
@@ -803,6 +1067,10 @@
 
                 try {
                     const currentTime = performance.now();
+                    const canvasWidth =
+                        starCanvas.width / window.devicePixelRatio;
+                    const canvasHeight =
+                        starCanvas.height / window.devicePixelRatio;
 
                     starCtx.clearRect(
                         0,
@@ -895,6 +1163,15 @@
             // Initialize night sky size and stars
             // Use requestAnimationFrame to ensure layout is complete before initializing stars
             initializeNightSkySize();
+
+            // Initialize CSS aurora (hide if disabled or on low-end devices)
+            const auroraContainer = document.getElementById("auroraContainer");
+            if (auroraContainer) {
+                if (!CONFIG.aurora.enabled || isLowEndDevice()) {
+                    auroraContainer.style.display = "none";
+                }
+            }
+
             requestAnimationFrame(() => {
                 initializeStars();
             });
@@ -1259,6 +1536,8 @@
                     const nightSky = document.getElementById("nightSky");
                     const meteorsContainer =
                         document.getElementById("meteorsContainer");
+                    const auroraContainer =
+                        document.getElementById("auroraContainer");
 
                     if (document.hidden) {
                         // Page is hidden - pause animations
@@ -1266,6 +1545,8 @@
                         if (nightSky) nightSky.classList.add("paused");
                         if (meteorsContainer)
                             meteorsContainer.classList.add("paused");
+                        if (auroraContainer)
+                            auroraContainer.classList.add("paused");
 
                         // Cancel canvas rendering
                         if (animationFrameId) {
@@ -1284,6 +1565,8 @@
                         if (nightSky) nightSky.classList.remove("paused");
                         if (meteorsContainer)
                             meteorsContainer.classList.remove("paused");
+                        if (auroraContainer)
+                            auroraContainer.classList.remove("paused");
 
                         // Reset shower state since all timeouts were cleared when hidden
                         isShowerActive = false;
