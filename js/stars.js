@@ -1,7 +1,19 @@
+/**
+ * @fileoverview Star system module - Canvas-based star and planet rendering
+ * @module stars
+ * @exports {initializeStars, generateStars, renderStars, setPageVisible, getCanvasState}
+ * @imports {CONFIG} from config.js
+ * @imports {getStarCount, easeInOutSine, safeQuerySelector} from utils.js
+ * @description Manages canvas-based star field with realistic spectral colors.
+ *   Features twinkling stars, static stars, binary systems, and bright planets.
+ *   Uses requestAnimationFrame for 60fps rendering with automatic pause when hidden.
+ * @performance 60fps canvas rendering, pauses when tab hidden, device pixel ratio optimized
+ */
+
 // ============================================================
 // STAR SYSTEM - Canvas-based star and planet rendering
 // Purpose: Realistic night sky with twinkling stars and planets
-// Lines: 1-300
+// Lines: 1-343
 // ============================================================
 
 import { CONFIG } from "./config.js";
@@ -9,7 +21,7 @@ import { getStarCount, easeInOutSine, safeQuerySelector } from "./utils.js";
 
 // ============================================================
 // STATE MANAGEMENT
-// Lines: 10-25
+// Lines: 26-35
 // ============================================================
 
 // Canvas and rendering state
@@ -23,7 +35,7 @@ const startTime = performance.now();
 
 // ============================================================
 // STAR GENERATION
-// Lines: 26-150
+// Lines: 36-190
 // ============================================================
 
 /**
@@ -178,7 +190,7 @@ export function generateStars(canvasWidth, canvasHeight) {
 
 // ============================================================
 // RENDERING
-// Lines: 151-250
+// Lines: 191-269
 // ============================================================
 
 /**
@@ -257,7 +269,7 @@ export function renderStars() {
 
 // ============================================================
 // INITIALIZATION
-// Lines: 251-300
+// Lines: 270-316
 // ============================================================
 
 /**
@@ -304,7 +316,7 @@ export function initializeStars() {
 
 // ============================================================
 // STATE ACCESSORS
-// Lines: 301-320
+// Lines: 317-343
 // ============================================================
 
 /**

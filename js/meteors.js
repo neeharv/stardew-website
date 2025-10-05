@@ -1,7 +1,19 @@
+/**
+ * @fileoverview Meteor system module - DOM-based meteor trails with CSS animations
+ * @module meteors
+ * @exports {initializeMeteorSystem, generateMeteorKeyframes, updateHeroDiagonal, startMeteors, stopMeteors, restartMeteors, setMeteorPageVisible}
+ * @imports {CONFIG} from config.js
+ * @imports {safeQuerySelector} from utils.js
+ * @description Manages shooting star effects using DOM elements with GPU-accelerated CSS animations.
+ *   Features two parallel systems: continuous random meteors and periodic meteor showers.
+ *   Dynamically generates CSS @keyframes based on viewport dimensions for responsive behavior.
+ * @performance GPU-accelerated CSS transforms, dynamic keyframe generation, timeout tracking for cleanup
+ */
+
 // ============================================================
 // METEOR SYSTEM - DOM-based meteor trails with CSS animations
 // Purpose: Random meteors and periodic showers with dynamic keyframes
-// Lines: 1-450
+// Lines: 1-434
 // ============================================================
 
 import { CONFIG } from "./config.js";
@@ -9,7 +21,7 @@ import { safeQuerySelector } from "./utils.js";
 
 // ============================================================
 // STATE MANAGEMENT
-// Lines: 10-35
+// Lines: 22-46
 // ============================================================
 
 // DOM elements
@@ -34,7 +46,7 @@ let activeShowerTimeouts = [];
 
 // ============================================================
 // INITIALIZATION
-// Lines: 36-70
+// Lines: 47-76
 // ============================================================
 
 /**
@@ -64,7 +76,7 @@ export function initializeMeteorSystem() {
 
 // ============================================================
 // KEYFRAME GENERATION
-// Lines: 71-130
+// Lines: 77-164
 // ============================================================
 
 /**
@@ -152,7 +164,7 @@ export function updateHeroDiagonal() {
 
 // ============================================================
 // METEOR CREATION
-// Lines: 131-280
+// Lines: 165-284
 // ============================================================
 
 /**
@@ -272,7 +284,7 @@ function createMeteor(baseAngle = null) {
 
 // ============================================================
 // SHOWER SYSTEM
-// Lines: 281-350
+// Lines: 285-346
 // ============================================================
 
 /**
@@ -334,7 +346,7 @@ function scheduleNextShower() {
 
 // ============================================================
 // SINGLE METEOR SYSTEM
-// Lines: 351-380
+// Lines: 347-367
 // ============================================================
 
 /**
@@ -355,7 +367,7 @@ function createSingleMeteor() {
 
 // ============================================================
 // PUBLIC CONTROL FUNCTIONS
-// Lines: 381-450
+// Lines: 368-434
 // ============================================================
 
 /**

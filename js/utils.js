@@ -1,3 +1,12 @@
+/**
+ * @fileoverview Utility functions module - Shared helpers
+ * @module utils
+ * @exports {safeQuerySelector, getStarCount, isLowEndDevice, easeInOutSine, pauseAnimations, resumeAnimations, initializeNightSkySize}
+ * @imports {CONFIG} from config.js
+ * @description Reusable helper functions used across multiple systems.
+ *   Includes DOM utilities, device detection, easing functions, and layout calculations.
+ */
+
 // ============================================================
 // UTILITY FUNCTIONS - Shared helpers
 // Purpose: Reusable functions used across multiple systems
@@ -93,7 +102,7 @@ export function resumeAnimations(nightSky, meteorsContainer, auroraContainer) {
 
 // ============================================================
 // NIGHT SKY UTILITIES
-// Lines: 100-150
+// Lines: 107-150
 // ============================================================
 
 /**

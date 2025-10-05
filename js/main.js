@@ -1,7 +1,20 @@
+/**
+ * @fileoverview Main orchestration module - Application initialization and event handling
+ * @module main
+ * @exports None (entry point)
+ * @imports {CONFIG} from config.js
+ * @imports {initializeNightSkySize, isLowEndDevice, getStarCount, pauseAnimations, resumeAnimations, safeQuerySelector} from utils.js
+ * @imports {initializeStars, generateStars, setPageVisible as setStarPageVisible, getCanvasState} from stars.js
+ * @imports {initializeMeteorSystem, generateMeteorKeyframes, updateHeroDiagonal, startMeteors, stopMeteors, restartMeteors, setMeteorPageVisible} from meteors.js
+ * @description Entry point that initializes all animation systems and coordinates global events.
+ *   Handles application lifecycle, resize events, and visibility changes for pause/resume.
+ *   Loaded by index.html as ES6 module: <script type="module" src="/js/main.js">
+ */
+
 // ============================================================
 // MAIN - Application initialization and orchestration
 // Purpose: Initialize all systems and handle global events
-// Lines: 1-250
+// Lines: 1-208
 // ============================================================
 
 import { CONFIG } from "./config.js";
@@ -31,7 +44,7 @@ import {
 
 // ============================================================
 // INITIALIZATION
-// Lines: 28-100
+// Lines: 45-79
 // ============================================================
 
 /**
@@ -66,7 +79,7 @@ function initializeApp() {
 
 // ============================================================
 // RESIZE HANDLER
-// Lines: 101-170
+// Lines: 80-138
 // ============================================================
 
 /**
@@ -125,7 +138,7 @@ function setupResizeHandler() {
 
 // ============================================================
 // VISIBILITY HANDLER
-// Lines: 171-250
+// Lines: 139-196
 // ============================================================
 
 /**
@@ -183,7 +196,7 @@ function setupVisibilityHandler() {
 
 // ============================================================
 // START APPLICATION
-// Lines: 251+
+// Lines: 197-208
 // ============================================================
 
 // Initialize app when DOM is ready
