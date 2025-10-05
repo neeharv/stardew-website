@@ -1,1255 +1,728 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Stardew Labs - Coming Soon</title>
-        <meta
-            name="description"
-            content="Stardew Labs is launching soon. Founded by Neehar and Tara, we're building something new. Stay tuned for updates."
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stardew Labs - Coming Soon</title>
+    <meta
+      name="description"
+      content="Stardew Labs is launching soon. Founded by Neehar and Tara, we're building something new. Stay tuned for updates."
+    />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://stardew.work/" />
+    <meta property="og:title" content="Stardew Labs - Coming Soon" />
+    <meta
+      property="og:description"
+      content="Ignition is imminent. We're cooking up something new – watch this space!"
+    />
+    <meta property="og:image" content="https://stardew.work/og-image.jpg" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://stardew.work/" />
+    <meta property="twitter:title" content="Stardew Labs - Coming Soon" />
+    <meta
+      property="twitter:description"
+      content="Ignition is imminent. We're cooking up something new – watch this space!"
+    />
+    <meta
+      property="twitter:image"
+      content="https://stardew.work/twitter-image.jpg"
+    />
+
+    <!-- Additional meta tags -->
+    <meta name="theme-color" content="#0a0a1a" />
+    <meta name="author" content="Stardew Labs" />
+    <link rel="canonical" href="https://stardew.work/" />
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body>
+    <!-- SVG definitions for clip-path and gradient -->
+    <svg
+      width="0"
+      height="0"
+      style="position: absolute"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <defs>
+        <clipPath id="contentCurveClip" clipPathUnits="objectBoundingBox">
+          <path d="M 0,0.038 Q 0.5,0 1,0.038 L 1,1 L 0,1 Z" fill="white" />
+        </clipPath>
+        <!-- Base stroke gradient: subtle at edges, bright at center -->
+        <linearGradient id="horizonStrokeGradient" x1="0%" x2="100%">
+          <stop
+            offset="0%"
+            stop-color="rgba(255,255,255,var(--horizon-edge-opacity))"
+          />
+          <stop
+            offset="35%"
+            stop-color="rgba(255,255,255,var(--horizon-edge-opacity))"
+          />
+          <stop
+            offset="50%"
+            stop-color="rgba(255,255,255,var(--horizon-center-opacity))"
+          />
+          <stop
+            offset="65%"
+            stop-color="rgba(255,255,255,var(--horizon-edge-opacity))"
+          />
+          <stop
+            offset="100%"
+            stop-color="rgba(255,255,255,var(--horizon-edge-opacity))"
+          />
+        </linearGradient>
+        <!-- Center glow gradient: only visible in middle 40-60% -->
+        <linearGradient id="horizonCenterGlow" x1="0%" x2="100%">
+          <stop offset="0%" stop-color="rgba(255,255,255,0)" />
+          <stop offset="40%" stop-color="rgba(255,255,255,0.6)" />
+          <stop
+            offset="50%"
+            stop-color="rgba(255,255,255,var(--horizon-center-opacity))"
+          />
+          <stop offset="60%" stop-color="rgba(255,255,255,0.6)" />
+          <stop offset="100%" stop-color="rgba(255,255,255,0)" />
+        </linearGradient>
+      </defs>
+    </svg>
+
+    <div class="hero">
+      <div class="night-sky" id="nightSky">
+        <canvas id="starCanvas"></canvas>
+      </div>
+      <div class="aurora-container" id="auroraContainer">
+        <div class="aurora-band aurora-band-1"></div>
+        <div class="aurora-band aurora-band-2"></div>
+        <div class="aurora-band aurora-band-3"></div>
+      </div>
+      <div class="meteors-container" id="meteorsContainer"></div>
+      <div class="logo-container">
+        <div class="logo-text">STARDEW LABS</div>
+      </div>
+    </div>
+
+    <div class="content">
+      <svg
+        class="horizon-overlay"
+        viewBox="0 0 1200 22"
+        preserveAspectRatio="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <!-- Thin stroke for edges -->
+        <path
+          d="M 0 13 Q 600 0, 1200 13"
+          stroke="url(#horizonStrokeGradient)"
+          stroke-width="var(--horizon-stroke-base)"
+          fill="none"
+          vector-effect="non-scaling-stroke"
         />
-
-        <!-- Open Graph / Facebook -->
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://stardew.work/" />
-        <meta property="og:title" content="Stardew Labs - Coming Soon" />
-        <meta
-            property="og:description"
-            content="Ignition is imminent. We're cooking up something new – watch this space!"
+        <!-- Thicker stroke for center glow -->
+        <path
+          d="M 0 13 Q 600 0, 1200 13"
+          stroke="url(#horizonCenterGlow)"
+          stroke-width="var(--horizon-stroke-glow)"
+          fill="none"
+          vector-effect="non-scaling-stroke"
         />
-        <meta property="og:image" content="https://stardew.work/og-image.jpg" />
-
-        <!-- Twitter -->
-        <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:url" content="https://stardew.work/" />
-        <meta property="twitter:title" content="Stardew Labs - Coming Soon" />
-        <meta
-            property="twitter:description"
-            content="Ignition is imminent. We're cooking up something new – watch this space!"
-        />
-        <meta
-            property="twitter:image"
-            content="https://stardew.work/twitter-image.jpg"
-        />
-
-        <!-- Additional meta tags -->
-        <meta name="theme-color" content="#0a0a1a" />
-        <meta name="author" content="Stardew Labs" />
-        <link rel="canonical" href="https://stardew.work/" />
-        <style>
-            :root {
-                --font-mono:
-                    monospace, -apple-system, BlinkMacSystemFont, "Segoe UI",
-                    Arial, sans-serif;
-
-                /* Curved horizon configuration */
-                --horizon-overlap: -12px; /* Content overlap with hero section */
-                --horizon-svg-top: -1px; /* Fine-tune SVG position */
-                --horizon-svg-height: 22px; /* SVG container height */
-                --horizon-stroke-base: 1px; /* Thin stroke for edges */
-                --horizon-stroke-glow: 1.5px; /* Thicker stroke for center */
-                --horizon-edge-opacity: 0.25; /* Opacity at far edges */
-                --horizon-center-opacity: 0.8; /* Opacity at center */
-            }
-
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-            }
-
-            body {
-                background: #0a0a1a;
-                color: white;
-                font-family: var(--font-mono);
-                min-height: 100vh;
-                display: flex;
-                flex-direction: column;
-            }
-
-            .hero {
-                flex: 1;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 40px 20px;
-                position: relative;
-                overflow: hidden;
-                background: linear-gradient(
-                    to bottom,
-                    #0a0a1a 0%,
-                    #0d0d24 40%,
-                    #12152e 85%,
-                    #1a1e32 100%
-                );
-            }
-
-            .night-sky {
-                position: absolute;
-                bottom: 0;
-                left: 50%;
-                /* Width, height, and bottom offset set dynamically by JavaScript */
-                transform-origin: 50% 50%;
-                animation: rotateSky 900s linear infinite;
-                will-change: transform;
-                transform: translate3d(-50%, 0, 0);
-                contain: layout style paint;
-            }
-
-            #starCanvas {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-            }
-
-            @keyframes rotateSky {
-                from {
-                    transform: translate3d(-50%, 0, 0) rotate(0deg);
-                }
-                to {
-                    transform: translate3d(-50%, 0, 0) rotate(360deg);
-                }
-            }
-
-            .paused {
-                animation-play-state: paused !important;
-            }
-
-            .paused * {
-                animation-play-state: paused !important;
-            }
-
-            .aurora-container.paused .aurora-band {
-                animation-play-state: paused !important;
-            }
-
-            .meteors-container {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                pointer-events: none;
-                z-index: 2;
-                contain: layout style paint;
-            }
-
-            .meteor {
-                position: absolute;
-                opacity: 0;
-                will-change: transform, opacity;
-            }
-
-            .meteor-head {
-                width: 4px;
-                height: 4px;
-                background: radial-gradient(
-                    circle,
-                    white,
-                    rgba(255, 255, 255, 0.8)
-                );
-                border-radius: 50%;
-                box-shadow: 0 0 4px rgba(255, 255, 255, 0.6);
-            }
-
-            .meteor-tail {
-                position: absolute;
-                top: 50%;
-                left: -70px;
-                width: 60px;
-                height: 2px;
-                background: linear-gradient(
-                    90deg,
-                    transparent,
-                    rgba(255, 200, 150, 0.2) 30%,
-                    rgba(255, 220, 180, 0.4) 70%,
-                    transparent 95%
-                );
-                transform: translateY(-50%);
-                filter: blur(0.5px);
-            }
-
-            .aurora-container {
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                width: 100%;
-                height: 25vh;
-                pointer-events: none;
-                z-index: 1;
-                overflow: visible;
-                mask-image: linear-gradient(
-                    to top,
-                    black 0%,
-                    black 40%,
-                    transparent 100%
-                );
-                -webkit-mask-image: linear-gradient(
-                    to top,
-                    black 0%,
-                    black 40%,
-                    transparent 100%
-                );
-            }
-
-            .aurora-band {
-                position: absolute;
-                bottom: 0;
-                left: -10%;
-                width: 120%;
-                height: 100%;
-                opacity: 0.15;
-                will-change: transform, opacity, filter;
-                mix-blend-mode: screen;
-                filter: blur(35px);
-            }
-
-            @media (max-width: 768px) {
-                .aurora-band {
-                    filter: blur(15px);
-                }
-            }
-
-            .aurora-band-1 {
-                background:
-                    radial-gradient(
-                        ellipse 22% 155% at 3% 50%,
-                        rgba(100, 255, 180, 0.35) 0%,
-                        rgba(100, 255, 180, 0.14) 42%,
-                        transparent 72%
-                    ),
-                    radial-gradient(
-                        ellipse 25% 150% at 22% 50%,
-                        rgba(80, 255, 150, 0.38) 0%,
-                        rgba(80, 255, 150, 0.16) 40%,
-                        transparent 70%
-                    ),
-                    radial-gradient(
-                        ellipse 30% 140% at 48% 50%,
-                        rgba(120, 255, 200, 0.36) 0%,
-                        rgba(120, 255, 200, 0.15) 35%,
-                        transparent 65%
-                    ),
-                    radial-gradient(
-                        ellipse 28% 160% at 75% 50%,
-                        rgba(90, 255, 170, 0.32) 0%,
-                        rgba(90, 255, 170, 0.13) 38%,
-                        transparent 68%
-                    ),
-                    radial-gradient(
-                        ellipse 24% 148% at 95% 50%,
-                        rgba(110, 255, 190, 0.34) 0%,
-                        rgba(110, 255, 190, 0.14) 40%,
-                        transparent 70%
-                    );
-                animation:
-                    auroraWave1 25s ease-in-out infinite,
-                    auroraShimmer1 15s ease-in-out infinite;
-                transform-origin: bottom center;
-            }
-
-            .aurora-band-2 {
-                background:
-                    radial-gradient(
-                        ellipse 26% 150% at 8% 50%,
-                        rgba(0, 255, 200, 0.3) 0%,
-                        rgba(0, 255, 200, 0.12) 40%,
-                        transparent 70%
-                    ),
-                    radial-gradient(
-                        ellipse 32% 155% at 32% 50%,
-                        rgba(20, 255, 220, 0.32) 0%,
-                        rgba(20, 255, 220, 0.13) 42%,
-                        transparent 72%
-                    ),
-                    radial-gradient(
-                        ellipse 28% 145% at 62% 50%,
-                        rgba(40, 255, 210, 0.3) 0%,
-                        rgba(40, 255, 210, 0.12) 38%,
-                        transparent 68%
-                    ),
-                    radial-gradient(
-                        ellipse 26% 135% at 90% 50%,
-                        rgba(30, 255, 215, 0.28) 0%,
-                        rgba(30, 255, 215, 0.11) 40%,
-                        transparent 70%
-                    );
-                animation:
-                    auroraWave2 30s ease-in-out infinite,
-                    auroraShimmer2 18s ease-in-out infinite;
-                transform-origin: bottom center;
-            }
-
-            .aurora-band-3 {
-                background:
-                    radial-gradient(
-                        ellipse 25% 145% at 5% 50%,
-                        rgba(150, 255, 100, 0.28) 0%,
-                        rgba(150, 255, 100, 0.11) 40%,
-                        transparent 70%
-                    ),
-                    radial-gradient(
-                        ellipse 24% 138% at 18% 50%,
-                        rgba(180, 255, 130, 0.26) 0%,
-                        rgba(180, 255, 130, 0.1) 42%,
-                        transparent 72%
-                    ),
-                    radial-gradient(
-                        ellipse 30% 148% at 42% 50%,
-                        rgba(140, 255, 110, 0.3) 0%,
-                        rgba(140, 255, 110, 0.12) 40%,
-                        transparent 70%
-                    ),
-                    radial-gradient(
-                        ellipse 27% 142% at 68% 50%,
-                        rgba(160, 255, 120, 0.28) 0%,
-                        rgba(160, 255, 120, 0.11) 38%,
-                        transparent 68%
-                    ),
-                    radial-gradient(
-                        ellipse 26% 150% at 92% 50%,
-                        rgba(170, 255, 125, 0.29) 0%,
-                        rgba(170, 255, 125, 0.115) 40%,
-                        transparent 70%
-                    );
-                animation:
-                    auroraWave3 35s ease-in-out infinite,
-                    auroraShimmer3 20s ease-in-out infinite;
-                transform-origin: bottom center;
-            }
-
-            @keyframes auroraWave1 {
-                0%,
-                100% {
-                    transform: translateX(0%) scaleX(1) scaleY(1) skewX(0deg)
-                        rotate(0deg);
-                }
-                25% {
-                    transform: translateX(-5%) scaleX(1.08) scaleY(0.95)
-                        skewX(-2deg) rotate(-1deg);
-                }
-                50% {
-                    transform: translateX(3%) scaleX(0.95) scaleY(1.05)
-                        skewX(1deg) rotate(0.5deg);
-                }
-                75% {
-                    transform: translateX(4%) scaleX(1.02) scaleY(0.98)
-                        skewX(2deg) rotate(1deg);
-                }
-            }
-
-            @keyframes auroraWave2 {
-                0%,
-                100% {
-                    transform: translateX(0%) scaleX(1) scaleY(1) skewX(0deg)
-                        rotate(0deg);
-                }
-                30% {
-                    transform: translateX(6%) scaleX(0.96) scaleY(1.04)
-                        skewX(3deg) rotate(1.5deg);
-                }
-                60% {
-                    transform: translateX(-4%) scaleX(1.05) scaleY(0.97)
-                        skewX(-1deg) rotate(-0.5deg);
-                }
-                90% {
-                    transform: translateX(2%) scaleX(1) scaleY(1) skewX(1deg)
-                        rotate(0.5deg);
-                }
-            }
-
-            @keyframes auroraWave3 {
-                0%,
-                100% {
-                    transform: translateX(0%) scaleX(1) scaleY(1) skewX(0deg)
-                        rotate(0deg);
-                }
-                33% {
-                    transform: translateX(-6%) scaleX(1.06) scaleY(1.02)
-                        skewX(-3deg) rotate(-1.5deg);
-                }
-                66% {
-                    transform: translateX(5%) scaleX(0.94) scaleY(0.96)
-                        skewX(2deg) rotate(1deg);
-                }
-            }
-
-            @keyframes auroraShimmer1 {
-                0%,
-                100% {
-                    opacity: 0.12;
-                }
-                50% {
-                    opacity: 0.18;
-                }
-            }
-
-            @keyframes auroraShimmer2 {
-                0%,
-                100% {
-                    opacity: 0.13;
-                }
-                50% {
-                    opacity: 0.17;
-                }
-            }
-
-            @keyframes auroraShimmer3 {
-                0%,
-                100% {
-                    opacity: 0.14;
-                }
-                50% {
-                    opacity: 0.16;
-                }
-            }
-
-            .logo-container {
-                text-align: center;
-                max-width: 1200px;
-                width: 100%;
-                position: relative;
-                z-index: 3;
-            }
-
-            .logo-text {
-                font-size: clamp(60px, 15vw, 180px);
-                font-weight: 900;
-                letter-spacing: 0.02em;
-                line-height: 1.1;
-                display: block;
-            }
-
-            .content {
-                position: relative;
-                clip-path: url(#contentCurveClip);
-                margin-top: var(--horizon-overlap);
-                background: linear-gradient(
-                    to bottom,
-                    #1f2238 0%,
-                    #282a38 30%,
-                    #2d2f3a 70%,
-                    #2d2f3a 100%
-                );
-                padding: 40px 20px 60px;
-                z-index: 4;
-            }
-
-            .horizon-overlay {
-                position: absolute;
-                top: var(--horizon-svg-top);
-                left: 0;
-                width: 100%;
-                height: var(--horizon-svg-height);
-                pointer-events: none;
-                z-index: 10;
-            }
-
-            .content-wrapper {
-                max-width: 1200px;
-                margin: 0 auto;
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 40px;
-                align-items: start;
-            }
-
-            .right-content p {
-                font-family: var(--font-mono);
-                font-size: clamp(18px, 2.5vw, 24px);
-                line-height: 1.1;
-                text-align: right;
-            }
-
-            .left-content p {
-                font-family: var(--font-mono);
-                font-size: clamp(18px, 2.5vw, 24px);
-                line-height: 1.6;
-                text-align: left;
-            }
-
-            .contact {
-                font-size: 16px;
-                line-height: 1.8;
-                margin-top: 30px;
-            }
-
-            .contact strong {
-                display: block;
-                margin-bottom: 5px;
-            }
-
-            .contact a {
-                color: white;
-                text-decoration: none;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-                transition: border-color 0.3s;
-            }
-
-            .contact a:hover {
-                border-bottom-color: white;
-            }
-
-            .left-content a {
-                color: white;
-                text-decoration: none;
-                position: relative;
-                transition: color 0.3s ease;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-            }
-
-            .left-content a:hover {
-                color: rgba(255, 255, 255, 0.8);
-                border-bottom-color: rgba(255, 255, 255, 0.6);
-            }
-
-            @media (max-width: 768px) {
-                .content-wrapper {
-                    grid-template-columns: 1fr;
-                    gap: 20px;
-                }
-
-                .logo-text {
-                    letter-spacing: 0;
-                }
-            }
-        </style>
-    </head>
-    <body>
-        <!-- SVG definitions for clip-path and gradient -->
-        <svg
-            width="0"
-            height="0"
-            style="position: absolute"
-            xmlns="http://www.w3.org/2000/svg"
-        >
-            <defs>
-                <clipPath
-                    id="contentCurveClip"
-                    clipPathUnits="objectBoundingBox"
-                >
-                    <path
-                        d="M 0,0.038 Q 0.5,0 1,0.038 L 1,1 L 0,1 Z"
-                        fill="white"
-                    />
-                </clipPath>
-                <!-- Base stroke gradient: subtle at edges, bright at center -->
-                <linearGradient id="horizonStrokeGradient" x1="0%" x2="100%">
-                    <stop
-                        offset="0%"
-                        stop-color="rgba(255,255,255,var(--horizon-edge-opacity))"
-                    />
-                    <stop
-                        offset="35%"
-                        stop-color="rgba(255,255,255,var(--horizon-edge-opacity))"
-                    />
-                    <stop
-                        offset="50%"
-                        stop-color="rgba(255,255,255,var(--horizon-center-opacity))"
-                    />
-                    <stop
-                        offset="65%"
-                        stop-color="rgba(255,255,255,var(--horizon-edge-opacity))"
-                    />
-                    <stop
-                        offset="100%"
-                        stop-color="rgba(255,255,255,var(--horizon-edge-opacity))"
-                    />
-                </linearGradient>
-                <!-- Center glow gradient: only visible in middle 40-60% -->
-                <linearGradient id="horizonCenterGlow" x1="0%" x2="100%">
-                    <stop offset="0%" stop-color="rgba(255,255,255,0)" />
-                    <stop offset="40%" stop-color="rgba(255,255,255,0.6)" />
-                    <stop
-                        offset="50%"
-                        stop-color="rgba(255,255,255,var(--horizon-center-opacity))"
-                    />
-                    <stop offset="60%" stop-color="rgba(255,255,255,0.6)" />
-                    <stop offset="100%" stop-color="rgba(255,255,255,0)" />
-                </linearGradient>
-            </defs>
-        </svg>
-
-        <div class="hero">
-            <div class="night-sky" id="nightSky">
-                <canvas id="starCanvas"></canvas>
-            </div>
-            <div class="aurora-container" id="auroraContainer">
-                <div class="aurora-band aurora-band-1"></div>
-                <div class="aurora-band aurora-band-2"></div>
-                <div class="aurora-band aurora-band-3"></div>
-            </div>
-            <div class="meteors-container" id="meteorsContainer"></div>
-            <div class="logo-container">
-                <div class="logo-text">STARDEW LABS</div>
-            </div>
-        </div>
-
-        <div class="content">
-            <svg
-                class="horizon-overlay"
-                viewBox="0 0 1200 22"
-                preserveAspectRatio="none"
-                xmlns="http://www.w3.org/2000/svg"
+      </svg>
+      <div class="content-wrapper">
+        <div class="left-content">
+          <p>
+            Ignition is imminent. We (<a
+              href="https://www.linkedin.com/in/neehar-venugopal/"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Neehar</a
             >
-                <!-- Thin stroke for edges -->
-                <path
-                    d="M 0 13 Q 600 0, 1200 13"
-                    stroke="url(#horizonStrokeGradient)"
-                    stroke-width="var(--horizon-stroke-base)"
-                    fill="none"
-                    vector-effect="non-scaling-stroke"
-                />
-                <!-- Thicker stroke for center glow -->
-                <path
-                    d="M 0 13 Q 600 0, 1200 13"
-                    stroke="url(#horizonCenterGlow)"
-                    stroke-width="var(--horizon-stroke-glow)"
-                    fill="none"
-                    vector-effect="non-scaling-stroke"
-                />
-            </svg>
-            <div class="content-wrapper">
-                <div class="left-content">
-                    <p>
-                        Ignition is imminent. We (<a
-                            href="https://www.linkedin.com/in/neehar-venugopal/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            >Neehar</a
-                        >
-                        +
-                        <a
-                            href="https://www.linkedin.com/in/priyanka-singh-075981bb/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            >Tara</a
-                        >) are cooking up something new – watch this space!
-                    </p>
-                </div>
-                <div class="right-content">
-                    <div class="contact">
-                        <strong>In the meantime, reach us at:</strong>
-                        <a href="mailto:hello@stardew.work"
-                            >hello@stardew.work</a
-                        >
-                    </div>
-                </div>
-            </div>
+            +
+            <a
+              href="https://www.linkedin.com/in/priyanka-singh-075981bb/"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Tara</a
+            >) are cooking up something new – watch this space!
+          </p>
         </div>
-        <script>
-            /**
-             * ARCHITECTURE OVERVIEW:
-             * This page creates a rotating night sky effect with three main visual systems:
-             *
-             * 1. ROTATING SKY CONTAINER (.night-sky):
-             *    - A square container positioned at the horizon line (bottom of .hero)
-             *    - Rotates 360° over 900s, creating the illusion of Earth's rotation
-             *    - Sized to cover the viewport even during rotation (diagonal * 2.2)
-             *    - Contains a canvas with stars and planets
-             *
-             * 2. STAR FIELD (canvas-based):
-             *    - Stars: Generated with realistic spectral colors (O-B through M class)
-             *    - 30% static, 70% twinkling using canvas animation loop
-             *    - Binary systems: 2.5% of stars have companion stars
-             *    - Planets: 5 bright non-twinkling objects positioned aesthetically
-             *    - Performance: Uses requestAnimationFrame for smooth 60fps rendering
-             *
-             * 3. METEOR SYSTEM (DOM-based CSS animations):
-             *    - Two parallel systems: random single meteors + periodic showers
-             *    - Preset angles (130-165°) with dynamically generated keyframes
-             *    - Distance tiers (short/med/long) for visual depth
-             *    - Timeouts tracked for pause/resume on visibility change
-             *
-             * PERFORMANCE OPTIMIZATIONS:
-             * - Canvas rendering pauses when tab is hidden
-             * - Meteors use CSS animations (GPU accelerated) not JS
-             * - Debounced resize handlers (250ms)
-             * - Device pixel ratio scaling for sharp stars on retina displays
-             */
+        <div class="right-content">
+          <div class="contact">
+            <strong>In the meantime, reach us at:</strong>
+            <a href="mailto:hello@stardew.work">hello@stardew.work</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      /**
+       * ARCHITECTURE OVERVIEW:
+       * This page creates a rotating night sky effect with three main visual systems:
+       *
+       * 1. ROTATING SKY CONTAINER (.night-sky):
+       *    - A square container positioned at the horizon line (bottom of .hero)
+       *    - Rotates 360° over 900s, creating the illusion of Earth's rotation
+       *    - Sized to cover the viewport even during rotation (diagonal * 2.2)
+       *    - Contains a canvas with stars and planets
+       *
+       * 2. STAR FIELD (canvas-based):
+       *    - Stars: Generated with realistic spectral colors (O-B through M class)
+       *    - 30% static, 70% twinkling using canvas animation loop
+       *    - Binary systems: 2.5% of stars have companion stars
+       *    - Planets: 5 bright non-twinkling objects positioned aesthetically
+       *    - Performance: Uses requestAnimationFrame for smooth 60fps rendering
+       *
+       * 3. METEOR SYSTEM (DOM-based CSS animations):
+       *    - Two parallel systems: random single meteors + periodic showers
+       *    - Preset angles (130-165°) with dynamically generated keyframes
+       *    - Distance tiers (short/med/long) for visual depth
+       *    - Timeouts tracked for pause/resume on visibility change
+       *
+       * PERFORMANCE OPTIMIZATIONS:
+       * - Canvas rendering pauses when tab is hidden
+       * - Meteors use CSS animations (GPU accelerated) not JS
+       * - Debounced resize handlers (250ms)
+       * - Device pixel ratio scaling for sharp stars on retina displays
+       */
 
-            // Configuration object
-            const CONFIG = {
-                stars: {
-                    countDesktop: 1200,
-                    countMobile: 800,
-                    mobileBreakpoint: 768,
-                    maxSize: 3,
-                    minSize: 1,
-                    animationDelayMax: 6,
-                    animationDurationMin: 4,
-                    animationDurationMax: 10,
-                    twinkleOpacityMin: 0.4,
-                    twinkleOpacityMax: 1.0,
-                    staticPercentage: 0.3,
-                    staticOpacityMin: 0.4,
-                    staticOpacityMax: 0.7,
-                    // Spectral classes follow real star distribution (OBAFGKM)
-                    // Color strings intentionally incomplete - opacity added in renderStars()
-                    spectralClasses: [
-                        {
-                            type: "O-B", // Hot blue-white stars (rare)
-                            color: "rgba(155, 176, 255,",
-                            percentage: 0.05,
-                        },
-                        {
-                            type: "A", // White stars
-                            color: "rgba(202, 215, 255,",
-                            percentage: 0.15,
-                        },
-                        {
-                            type: "F-G", // Yellow-white stars (like our Sun)
-                            color: "rgba(248, 247, 255,",
-                            percentage: 0.3,
-                        },
-                        {
-                            type: "K", // Orange stars
-                            color: "rgba(255, 210, 161,",
-                            percentage: 0.3,
-                        },
-                        {
-                            type: "M", // Red dwarfs (most common in reality)
-                            color: "rgba(255, 204, 111,",
-                            percentage: 0.2,
-                        },
-                    ],
-                    binaryPercentage: 0.025, // 2.5% of stars have binary companions
-                    binarySeparationMin: 2, // Pixels between binary pair
-                    binarySeparationMax: 8,
-                },
-                // Planets are rendered as bright, non-twinkling points
-                // Names are for reference only (not displayed to user)
-                planets: [
-                    {
-                        name: "Venus",
-                        color: "rgba(255, 250, 235,",
-                        size: 4.5,
-                        opacity: 0.95,
-                    },
-                    {
-                        name: "Jupiter",
-                        color: "rgba(255, 244, 229,",
-                        size: 4.2,
-                        opacity: 0.9,
-                    },
-                    {
-                        name: "Mars",
-                        color: "rgba(255, 180, 140,",
-                        size: 3.5,
-                        opacity: 0.85,
-                    },
-                    {
-                        name: "Saturn",
-                        color: "rgba(255, 245, 220,",
-                        size: 3.8,
-                        opacity: 0.88,
-                    },
-                    {
-                        name: "Mercury",
-                        color: "rgba(230, 235, 255,",
-                        size: 3,
-                        opacity: 0.8,
-                    },
-                ],
-                meteors: {
-                    // Start positions in percentage (can be outside viewport)
-                    startXMin: 90, // Right edge
-                    startXMax: 120, // Beyond right edge
-                    // Y varies based on X to ensure meteors enter from top-right
-                    startYMin: {
-                        whenXOutOfBounds: -10, // Start just above viewport if X > 100%
-                        whenXInBounds: -40, // Start higher if X < 100%
-                    },
-                    startYMax: 50, // Can start partway down screen
-                    angleMin: 130, // Diagonal down-left (degrees)
-                    angleMax: 160, // Steeper down-left
-                    angleVariation: 15, // Not currently used
-                    durationMin: 4, // Seconds for meteor animation
-                    durationMax: 6,
-                    showerCountMin: 6, // Meteors per shower
-                    showerCountMax: 12,
-                    showerIntervalMin: 80, // Milliseconds between meteors in shower
-                    showerIntervalMax: 230,
-                    singleMeteorIntervalMin: 1500, // Milliseconds between random meteors
-                    singleMeteorIntervalMax: 5500,
-                    nextShowerMin: 3000, // Milliseconds until next shower
-                    nextShowerMax: 8000,
-                    singleMeteorStreamCount: 2, // Parallel random meteor timers
-                    initialMeteorDelayMax: 2000, // Stagger initial meteors
-                    initialShowerDelayMin: 2000, // Wait before first shower
-                    initialShowerDelayMax: 4000,
-                    showerCleanupDelayPerMeteor: 250, // Grace period before next shower
-                    showerCleanupDelayBase: 2000,
-                },
-                aurora: {
-                    enabled: false, // Disabled in production - CSS renderer ready to enable
-                    lowEndCpuCores: 4, // Hide aurora on devices with fewer CPU cores
-                },
-                performance: {
-                    resizeDebounceMs: 250,
-                },
-            };
+      // Configuration object
+      const CONFIG = {
+        stars: {
+          countDesktop: 1200,
+          countMobile: 800,
+          mobileBreakpoint: 768,
+          maxSize: 3,
+          minSize: 1,
+          animationDelayMax: 6,
+          animationDurationMin: 4,
+          animationDurationMax: 10,
+          twinkleOpacityMin: 0.4,
+          twinkleOpacityMax: 1.0,
+          staticPercentage: 0.3,
+          staticOpacityMin: 0.4,
+          staticOpacityMax: 0.7,
+          // Spectral classes follow real star distribution (OBAFGKM)
+          // Color strings intentionally incomplete - opacity added in renderStars()
+          spectralClasses: [
+            {
+              type: "O-B", // Hot blue-white stars (rare)
+              color: "rgba(155, 176, 255,",
+              percentage: 0.05,
+            },
+            {
+              type: "A", // White stars
+              color: "rgba(202, 215, 255,",
+              percentage: 0.15,
+            },
+            {
+              type: "F-G", // Yellow-white stars (like our Sun)
+              color: "rgba(248, 247, 255,",
+              percentage: 0.3,
+            },
+            {
+              type: "K", // Orange stars
+              color: "rgba(255, 210, 161,",
+              percentage: 0.3,
+            },
+            {
+              type: "M", // Red dwarfs (most common in reality)
+              color: "rgba(255, 204, 111,",
+              percentage: 0.2,
+            },
+          ],
+          binaryPercentage: 0.025, // 2.5% of stars have binary companions
+          binarySeparationMin: 2, // Pixels between binary pair
+          binarySeparationMax: 8,
+        },
+        // Planets are rendered as bright, non-twinkling points
+        // Names are for reference only (not displayed to user)
+        planets: [
+          {
+            name: "Venus",
+            color: "rgba(255, 250, 235,",
+            size: 4.5,
+            opacity: 0.95,
+          },
+          {
+            name: "Jupiter",
+            color: "rgba(255, 244, 229,",
+            size: 4.2,
+            opacity: 0.9,
+          },
+          {
+            name: "Mars",
+            color: "rgba(255, 180, 140,",
+            size: 3.5,
+            opacity: 0.85,
+          },
+          {
+            name: "Saturn",
+            color: "rgba(255, 245, 220,",
+            size: 3.8,
+            opacity: 0.88,
+          },
+          {
+            name: "Mercury",
+            color: "rgba(230, 235, 255,",
+            size: 3,
+            opacity: 0.8,
+          },
+        ],
+        meteors: {
+          // Start positions in percentage (can be outside viewport)
+          startXMin: 90, // Right edge
+          startXMax: 120, // Beyond right edge
+          // Y varies based on X to ensure meteors enter from top-right
+          startYMin: {
+            whenXOutOfBounds: -10, // Start just above viewport if X > 100%
+            whenXInBounds: -40, // Start higher if X < 100%
+          },
+          startYMax: 50, // Can start partway down screen
+          angleMin: 130, // Diagonal down-left (degrees)
+          angleMax: 160, // Steeper down-left
+          angleVariation: 15, // Not currently used
+          durationMin: 4, // Seconds for meteor animation
+          durationMax: 6,
+          showerCountMin: 6, // Meteors per shower
+          showerCountMax: 12,
+          showerIntervalMin: 80, // Milliseconds between meteors in shower
+          showerIntervalMax: 230,
+          singleMeteorIntervalMin: 1500, // Milliseconds between random meteors
+          singleMeteorIntervalMax: 5500,
+          nextShowerMin: 3000, // Milliseconds until next shower
+          nextShowerMax: 8000,
+          singleMeteorStreamCount: 2, // Parallel random meteor timers
+          initialMeteorDelayMax: 2000, // Stagger initial meteors
+          initialShowerDelayMin: 2000, // Wait before first shower
+          initialShowerDelayMax: 4000,
+          showerCleanupDelayPerMeteor: 250, // Grace period before next shower
+          showerCleanupDelayBase: 2000,
+        },
+        aurora: {
+          enabled: false, // Disabled in production - CSS renderer ready to enable
+          lowEndCpuCores: 4, // Hide aurora on devices with fewer CPU cores
+        },
+        performance: {
+          resizeDebounceMs: 250,
+        },
+      };
 
-            /**
-             * Calculate and set optimal night sky container size
-             *
-             * The .night-sky container must be large enough to cover the viewport
-             * during 360° rotation. It's positioned at the horizon (bottom of .hero)
-             * with transform-origin at center.
-             *
-             * Math: diagonal * 2.2 ensures corners stay offscreen during rotation
-             * - diagonal = distance from horizon to top corners
-             * - 2.2 = safety margin (sqrt(2) ≈ 1.41, but we need extra coverage)
-             * - Positioned with bottom: -containerSize/2 so center is at horizon
-             */
-            function initializeNightSkySize() {
-                try {
-                    const hero = document.querySelector(".hero");
-                    const nightSky = document.getElementById("nightSky");
+      /**
+       * Calculate and set optimal night sky container size
+       *
+       * The .night-sky container must be large enough to cover the viewport
+       * during 360° rotation. It's positioned at the horizon (bottom of .hero)
+       * with transform-origin at center.
+       *
+       * Math: diagonal * 2.2 ensures corners stay offscreen during rotation
+       * - diagonal = distance from horizon to top corners
+       * - 2.2 = safety margin (sqrt(2) ≈ 1.41, but we need extra coverage)
+       * - Positioned with bottom: -containerSize/2 so center is at horizon
+       */
+      function initializeNightSkySize() {
+        try {
+          const hero = document.querySelector(".hero");
+          const nightSky = document.getElementById("nightSky");
 
-                    if (!hero || !nightSky) {
-                        throw new Error("Hero or night sky element not found");
-                    }
+          if (!hero || !nightSky) {
+            throw new Error("Hero or night sky element not found");
+          }
 
-                    const heroRect = hero.getBoundingClientRect();
-                    const heroWidth = heroRect.width;
-                    const heroHeight = heroRect.height;
+          const heroRect = hero.getBoundingClientRect();
+          const heroWidth = heroRect.width;
+          const heroHeight = heroRect.height;
 
-                    // Calculate diagonal from horizon (bottom-center) to top corners
-                    const diagonal = Math.sqrt(
-                        (heroWidth / 2) ** 2 + heroHeight ** 2,
-                    );
+          // Calculate diagonal from horizon (bottom-center) to top corners
+          const diagonal = Math.sqrt((heroWidth / 2) ** 2 + heroHeight ** 2);
 
-                    // Container rotates from center, positioned at horizon
-                    const containerSize = Math.ceil(diagonal * 2.2);
+          // Container rotates from center, positioned at horizon
+          const containerSize = Math.ceil(diagonal * 2.2);
 
-                    // Apply dimensions and position center at horizon
-                    nightSky.style.width = `${containerSize}px`;
-                    nightSky.style.height = `${containerSize}px`;
-                    nightSky.style.bottom = `${-containerSize / 2}px`;
-                } catch (error) {
-                    console.error(
-                        "Failed to initialize night sky size:",
-                        error,
-                    );
-                }
-            }
+          // Apply dimensions and position center at horizon
+          nightSky.style.width = `${containerSize}px`;
+          nightSky.style.height = `${containerSize}px`;
+          nightSky.style.bottom = `${-containerSize / 2}px`;
+        } catch (error) {
+          console.error("Failed to initialize night sky size:", error);
+        }
+      }
 
-            // Get appropriate star count based on device width
-            function getStarCount() {
-                return window.innerWidth < CONFIG.stars.mobileBreakpoint
-                    ? CONFIG.stars.countMobile
-                    : CONFIG.stars.countDesktop;
-            }
+      // Get appropriate star count based on device width
+      function getStarCount() {
+        return window.innerWidth < CONFIG.stars.mobileBreakpoint
+          ? CONFIG.stars.countMobile
+          : CONFIG.stars.countDesktop;
+      }
 
-            // Detect low-end devices based on CPU cores
-            // Low-end devices will have aurora disabled for performance
-            function isLowEndDevice() {
-                // Check CPU cores (most reliable indicator)
-                const cpuCores = navigator.hardwareConcurrency || 2;
-                if (cpuCores < CONFIG.aurora.lowEndCpuCores) {
-                    return true;
-                }
+      // Detect low-end devices based on CPU cores
+      // Low-end devices will have aurora disabled for performance
+      function isLowEndDevice() {
+        // Check CPU cores (most reliable indicator)
+        const cpuCores = navigator.hardwareConcurrency || 2;
+        if (cpuCores < CONFIG.aurora.lowEndCpuCores) {
+          return true;
+        }
 
-                // Check device memory if available (in GB)
-                if (navigator.deviceMemory && navigator.deviceMemory < 4) {
-                    return true;
-                }
+        // Check device memory if available (in GB)
+        if (navigator.deviceMemory && navigator.deviceMemory < 4) {
+          return true;
+        }
 
-                return false;
-            }
-            // Canvas-based star rendering
-            let starCanvas,
-                starCtx,
-                stars = [],
-                planets = [],
-                animationFrameId = null;
-            let isPageVisible = !document.hidden;
-            const startTime = performance.now();
+        return false;
+      }
+      // Canvas-based star rendering
+      let starCanvas,
+        starCtx,
+        stars = [],
+        planets = [],
+        animationFrameId = null;
+      let isPageVisible = !document.hidden;
+      const startTime = performance.now();
 
-            // Select spectral class color based on realistic distribution
-            function getSpectralColor() {
-                const rand = Math.random();
-                let cumulative = 0;
-                for (const spectralClass of CONFIG.stars.spectralClasses) {
-                    cumulative += spectralClass.percentage;
-                    if (rand <= cumulative) {
-                        return spectralClass.color;
-                    }
-                }
-                return CONFIG.stars.spectralClasses[2].color; // Default to F-G
-            }
+      // Select spectral class color based on realistic distribution
+      function getSpectralColor() {
+        const rand = Math.random();
+        let cumulative = 0;
+        for (const spectralClass of CONFIG.stars.spectralClasses) {
+          cumulative += spectralClass.percentage;
+          if (rand <= cumulative) {
+            return spectralClass.color;
+          }
+        }
+        return CONFIG.stars.spectralClasses[2].color; // Default to F-G
+      }
 
-            // Generate star data array
-            function generateStars(canvasWidth, canvasHeight) {
-                // Validate canvas dimensions
-                if (
-                    !canvasWidth ||
-                    !canvasHeight ||
-                    canvasWidth <= 0 ||
-                    canvasHeight <= 0
-                ) {
-                    console.warn(
-                        `Invalid canvas dimensions for star generation: ${canvasWidth}x${canvasHeight}`,
-                    );
-                    stars = [];
-                    return;
-                }
+      // Generate star data array
+      function generateStars(canvasWidth, canvasHeight) {
+        // Validate canvas dimensions
+        if (
+          !canvasWidth ||
+          !canvasHeight ||
+          canvasWidth <= 0 ||
+          canvasHeight <= 0
+        ) {
+          console.warn(
+            `Invalid canvas dimensions for star generation: ${canvasWidth}x${canvasHeight}`,
+          );
+          stars = [];
+          return;
+        }
 
-                const numStars = getStarCount();
-                stars = [];
+        const numStars = getStarCount();
+        stars = [];
 
-                for (let i = 0; i < numStars; i++) {
-                    // Random position with bias toward top half (visible area)
-                    const x = Math.random() * canvasWidth;
-                    // Math.pow(random, 1.5) biases toward 0, concentrating stars at top
-                    // where they're more visible (bottom half is partially below horizon)
-                    const y = Math.pow(Math.random(), 1.5) * canvasHeight;
+        for (let i = 0; i < numStars; i++) {
+          // Random position with bias toward top half (visible area)
+          const x = Math.random() * canvasWidth;
+          // Math.pow(random, 1.5) biases toward 0, concentrating stars at top
+          // where they're more visible (bottom half is partially below horizon)
+          const y = Math.pow(Math.random(), 1.5) * canvasHeight;
 
-                    // Varied sizes
-                    const size =
-                        CONFIG.stars.minSize +
-                        Math.random() *
-                            (CONFIG.stars.maxSize - CONFIG.stars.minSize);
+          // Varied sizes
+          const size =
+            CONFIG.stars.minSize +
+            Math.random() * (CONFIG.stars.maxSize - CONFIG.stars.minSize);
 
-                    // Assign spectral color
-                    const color = getSpectralColor();
+          // Assign spectral color
+          const color = getSpectralColor();
 
-                    // Make some stars static (non-twinkling)
-                    const isStatic =
-                        Math.random() < CONFIG.stars.staticPercentage;
+          // Make some stars static (non-twinkling)
+          const isStatic = Math.random() < CONFIG.stars.staticPercentage;
 
-                    if (isStatic) {
-                        stars.push({
-                            x,
-                            y,
-                            size,
-                            color,
-                            isStatic: true,
-                            opacity:
-                                CONFIG.stars.staticOpacityMin +
-                                Math.random() *
-                                    (CONFIG.stars.staticOpacityMax -
-                                        CONFIG.stars.staticOpacityMin),
-                        });
-                    } else {
-                        stars.push({
-                            x,
-                            y,
-                            size,
-                            color,
-                            isStatic: false,
-                            twinkleDelay:
-                                Math.random() *
-                                CONFIG.stars.animationDelayMax *
-                                1000,
-                            twinkleDuration:
-                                (CONFIG.stars.animationDurationMin +
-                                    Math.random() *
-                                        (CONFIG.stars.animationDurationMax -
-                                            CONFIG.stars
-                                                .animationDurationMin)) *
-                                1000,
-                        });
-                    }
-
-                    // Generate binary companion star (2.5% chance)
-                    // Binary pairs are positioned near each other in random direction
-                    if (Math.random() < CONFIG.stars.binaryPercentage) {
-                        const angle = Math.random() * Math.PI * 2; // Random direction
-                        const separation =
-                            CONFIG.stars.binarySeparationMin +
-                            Math.random() *
-                                (CONFIG.stars.binarySeparationMax -
-                                    CONFIG.stars.binarySeparationMin);
-                        const companionX = x + Math.cos(angle) * separation;
-                        const companionY = y + Math.sin(angle) * separation;
-                        // Companion is typically smaller than primary (60-90%)
-                        const companionSize =
-                            size * (0.6 + Math.random() * 0.3);
-
-                        if (isStatic) {
-                            stars.push({
-                                x: companionX,
-                                y: companionY,
-                                size: companionSize,
-                                color,
-                                isStatic: true,
-                                opacity:
-                                    CONFIG.stars.staticOpacityMin +
-                                    Math.random() *
-                                        (CONFIG.stars.staticOpacityMax -
-                                            CONFIG.stars.staticOpacityMin),
-                            });
-                        } else {
-                            stars.push({
-                                x: companionX,
-                                y: companionY,
-                                size: companionSize,
-                                color,
-                                isStatic: false,
-                                twinkleDelay:
-                                    Math.random() *
-                                    CONFIG.stars.animationDelayMax *
-                                    1000,
-                                twinkleDuration:
-                                    (CONFIG.stars.animationDurationMin +
-                                        Math.random() *
-                                            (CONFIG.stars.animationDurationMax -
-                                                CONFIG.stars
-                                                    .animationDurationMin)) *
-                                    1000,
-                            });
-                        }
-                    }
-                }
-
-                // Generate planets (static bright objects)
-                // Planets don't twinkle and are brighter than stars
-                planets = [];
-                CONFIG.planets.forEach((planet, index) => {
-                    // Position planets at aesthetically pleasing locations
-                    // Evenly spaced horizontally with vertical randomness
-                    // Formula: divide canvas into (n+1) sections, place in section centers
-                    const baseX =
-                        (canvasWidth / (CONFIG.planets.length + 1)) *
-                        (index + 1);
-                    const baseY = canvasHeight * (0.2 + Math.random() * 0.4); // Top 60% of sky
-                    // Add 15% random offset for natural appearance
-                    const offsetX = (Math.random() - 0.5) * canvasWidth * 0.15;
-                    const offsetY = (Math.random() - 0.5) * canvasHeight * 0.15;
-
-                    planets.push({
-                        x: baseX + offsetX,
-                        y: baseY + offsetY,
-                        size: planet.size,
-                        color: planet.color,
-                        opacity: planet.opacity,
-                        name: planet.name,
-                    });
-                });
-            }
-
-            // Ease-in-out function matching CSS ease-in-out
-            function easeInOutSine(t) {
-                return -(Math.cos(Math.PI * t) - 1) / 2;
-            }
-
-            // Calculate current opacity for twinkling star
-            function getTwinkleOpacity(star, currentTime) {
-                const elapsed = currentTime - startTime - star.twinkleDelay;
-                if (elapsed < 0) return CONFIG.stars.twinkleOpacityMin;
-
-                const cyclePosition =
-                    (elapsed % star.twinkleDuration) / star.twinkleDuration;
-                const easedPosition = easeInOutSine(cyclePosition);
-
-                return (
-                    CONFIG.stars.twinkleOpacityMin +
-                    easedPosition *
-                        (CONFIG.stars.twinkleOpacityMax -
-                            CONFIG.stars.twinkleOpacityMin)
-                );
-            }
-
-            // Render all stars on canvas
-            function renderStars() {
-                if (!starCtx || !starCanvas || !isPageVisible) {
-                    // Cancel any pending animation frame on early return
-                    if (animationFrameId) {
-                        cancelAnimationFrame(animationFrameId);
-                        animationFrameId = null;
-                    }
-                    return;
-                }
-
-                try {
-                    const currentTime = performance.now();
-                    const canvasWidth =
-                        starCanvas.width / window.devicePixelRatio;
-                    const canvasHeight =
-                        starCanvas.height / window.devicePixelRatio;
-
-                    starCtx.clearRect(
-                        0,
-                        0,
-                        starCanvas.width,
-                        starCanvas.height,
-                    );
-
-                    // Render stars with spectral colors
-                    stars.forEach((star) => {
-                        const opacity = star.isStatic
-                            ? star.opacity
-                            : getTwinkleOpacity(star, currentTime);
-
-                        starCtx.fillStyle = `${star.color} ${opacity})`;
-                        starCtx.beginPath();
-                        starCtx.arc(
-                            star.x,
-                            star.y,
-                            star.size / 2,
-                            0,
-                            Math.PI * 2,
-                        );
-                        starCtx.fill();
-                    });
-
-                    // Render planets (bright, non-twinkling)
-                    planets.forEach((planet) => {
-                        starCtx.fillStyle = `${planet.color} ${planet.opacity})`;
-                        starCtx.beginPath();
-                        starCtx.arc(
-                            planet.x,
-                            planet.y,
-                            planet.size / 2,
-                            0,
-                            Math.PI * 2,
-                        );
-                        starCtx.fill();
-                    });
-
-                    if (isPageVisible) {
-                        animationFrameId = requestAnimationFrame(renderStars);
-                    }
-                } catch (error) {
-                    console.error("Error in renderStars:", error);
-                    // Cancel animation loop on error to prevent infinite error spam
-                    if (animationFrameId) {
-                        cancelAnimationFrame(animationFrameId);
-                        animationFrameId = null;
-                    }
-                }
-            }
-
-            // Initialize canvas and stars
-            function initializeStars() {
-                try {
-                    starCanvas = document.getElementById("starCanvas");
-                    if (!starCanvas) {
-                        throw new Error("Star canvas element not found");
-                    }
-
-                    starCtx = starCanvas.getContext("2d");
-                    if (!starCtx) {
-                        throw new Error("Could not get canvas context");
-                    }
-
-                    // Set canvas size with device pixel ratio for sharp rendering on retina
-                    // We scale the canvas buffer (width/height) by DPR, then scale context back
-                    // This gives us more pixels to work with without changing coordinate system
-                    const nightSky = document.getElementById("nightSky");
-                    if (nightSky) {
-                        const rect = nightSky.getBoundingClientRect();
-                        starCanvas.width = rect.width * window.devicePixelRatio;
-                        starCanvas.height =
-                            rect.height * window.devicePixelRatio;
-                        // Scale context so we can use logical pixels in drawing code
-                        starCtx.scale(
-                            window.devicePixelRatio,
-                            window.devicePixelRatio,
-                        );
-
-                        generateStars(rect.width, rect.height);
-                        renderStars();
-                    }
-                } catch (error) {
-                    console.error("Failed to initialize stars:", error);
-                }
-            }
-
-            // Initialize night sky size and stars
-            // Use requestAnimationFrame to ensure layout is complete before initializing stars
-            initializeNightSkySize();
-
-            // Initialize CSS aurora (hide if disabled or on low-end devices)
-            const auroraContainer = document.getElementById("auroraContainer");
-            if (auroraContainer) {
-                if (!CONFIG.aurora.enabled || isLowEndDevice()) {
-                    auroraContainer.style.display = "none";
-                }
-            }
-
-            requestAnimationFrame(() => {
-                initializeStars();
+          if (isStatic) {
+            stars.push({
+              x,
+              y,
+              size,
+              color,
+              isStatic: true,
+              opacity:
+                CONFIG.stars.staticOpacityMin +
+                Math.random() *
+                  (CONFIG.stars.staticOpacityMax -
+                    CONFIG.stars.staticOpacityMin),
             });
+          } else {
+            stars.push({
+              x,
+              y,
+              size,
+              color,
+              isStatic: false,
+              twinkleDelay:
+                Math.random() * CONFIG.stars.animationDelayMax * 1000,
+              twinkleDuration:
+                (CONFIG.stars.animationDurationMin +
+                  Math.random() *
+                    (CONFIG.stars.animationDurationMax -
+                      CONFIG.stars.animationDurationMin)) *
+                1000,
+            });
+          }
 
-            // Cache DOM elements with error handling
-            let meteorsContainer, heroElement, heroDiagonal;
-            let isShowerActive = false;
-            // Preset angles for consistent meteor trajectories (degrees, CSS rotation)
-            // Range: 130-165° = diagonal movement from top-right to bottom-left
-            const METEOR_ANGLES = [130, 135, 140, 145, 150, 155, 160, 165];
-            // Distance tiers create depth by varying travel distance
-            const DISTANCE_TIERS = ["short", "med", "long"];
+          // Generate binary companion star (2.5% chance)
+          // Binary pairs are positioned near each other in random direction
+          if (Math.random() < CONFIG.stars.binaryPercentage) {
+            const angle = Math.random() * Math.PI * 2; // Random direction
+            const separation =
+              CONFIG.stars.binarySeparationMin +
+              Math.random() *
+                (CONFIG.stars.binarySeparationMax -
+                  CONFIG.stars.binarySeparationMin);
+            const companionX = x + Math.cos(angle) * separation;
+            const companionY = y + Math.sin(angle) * separation;
+            // Companion is typically smaller than primary (60-90%)
+            const companionSize = size * (0.6 + Math.random() * 0.3);
 
-            // Meteor timeout tracking for pause/resume
-            let activeMeteorTimeouts = [];
-            let activeShowerTimeouts = [];
-
-            function initializeMeteorSystem() {
-                try {
-                    meteorsContainer =
-                        document.getElementById("meteorsContainer");
-                    heroElement = document.getElementsByClassName("hero")[0];
-
-                    if (!meteorsContainer) {
-                        throw new Error("Meteors container not found");
-                    }
-                    if (!heroElement) {
-                        throw new Error("Hero element not found");
-                    }
-
-                    // Cache hero dimensions
-                    const heroRect = heroElement.getBoundingClientRect();
-                    const heroWidth = heroRect.width;
-                    const heroHeight = heroRect.height;
-                    heroDiagonal = Math.sqrt(heroWidth ** 2 + heroHeight ** 2);
-
-                    return true;
-                } catch (error) {
-                    console.error("Failed to initialize meteor system:", error);
-                    return false;
-                }
+            if (isStatic) {
+              stars.push({
+                x: companionX,
+                y: companionY,
+                size: companionSize,
+                color,
+                isStatic: true,
+                opacity:
+                  CONFIG.stars.staticOpacityMin +
+                  Math.random() *
+                    (CONFIG.stars.staticOpacityMax -
+                      CONFIG.stars.staticOpacityMin),
+              });
+            } else {
+              stars.push({
+                x: companionX,
+                y: companionY,
+                size: companionSize,
+                color,
+                isStatic: false,
+                twinkleDelay:
+                  Math.random() * CONFIG.stars.animationDelayMax * 1000,
+                twinkleDuration:
+                  (CONFIG.stars.animationDurationMin +
+                    Math.random() *
+                      (CONFIG.stars.animationDurationMax -
+                        CONFIG.stars.animationDurationMin)) *
+                  1000,
+              });
             }
+          }
+        }
 
-            /**
-             * Generate CSS @keyframes dynamically based on viewport size
-             *
-             * Why dynamic? Meteor travel distance depends on viewport diagonal,
-             * which varies with window size. We generate keyframes for each
-             * angle × distance combination (8 angles × 3 distances = 24 keyframes).
-             *
-             * This approach uses GPU-accelerated CSS animations instead of JS,
-             * while still being responsive to window size.
-             */
-            function generateMeteorKeyframes() {
-                try {
-                    if (!heroDiagonal) {
-                        console.warn("heroDiagonal not initialized");
-                        return;
-                    }
+        // Generate planets (static bright objects)
+        // Planets don't twinkle and are brighter than stars
+        planets = [];
+        CONFIG.planets.forEach((planet, index) => {
+          // Position planets at aesthetically pleasing locations
+          // Evenly spaced horizontally with vertical randomness
+          // Formula: divide canvas into (n+1) sections, place in section centers
+          const baseX =
+            (canvasWidth / (CONFIG.planets.length + 1)) * (index + 1);
+          const baseY = canvasHeight * (0.2 + Math.random() * 0.4); // Top 60% of sky
+          // Add 15% random offset for natural appearance
+          const offsetX = (Math.random() - 0.5) * canvasWidth * 0.15;
+          const offsetY = (Math.random() - 0.5) * canvasHeight * 0.15;
 
-                    // Three distance tiers for visual depth (±25px from diagonal)
-                    const distances = {
-                        short: heroDiagonal - 25,
-                        med: heroDiagonal,
-                        long: heroDiagonal + 25,
-                    };
+          planets.push({
+            x: baseX + offsetX,
+            y: baseY + offsetY,
+            size: planet.size,
+            color: planet.color,
+            opacity: planet.opacity,
+            name: planet.name,
+          });
+        });
+      }
 
-                    let keyframesCSS = "";
+      // Ease-in-out function matching CSS ease-in-out
+      function easeInOutSine(t) {
+        return -(Math.cos(Math.PI * t) - 1) / 2;
+      }
 
-                    METEOR_ANGLES.forEach((angle) => {
-                        const radians = (angle * Math.PI) / 180;
+      // Calculate current opacity for twinkling star
+      function getTwinkleOpacity(star, currentTime) {
+        const elapsed = currentTime - startTime - star.twinkleDelay;
+        if (elapsed < 0) return CONFIG.stars.twinkleOpacityMin;
 
-                        DISTANCE_TIERS.forEach((tier) => {
-                            const distance = distances[tier];
-                            const endX = Math.cos(radians) * distance;
-                            const endY = Math.sin(radians) * distance;
+        const cyclePosition =
+          (elapsed % star.twinkleDuration) / star.twinkleDuration;
+        const easedPosition = easeInOutSine(cyclePosition);
 
-                            keyframesCSS += `
+        return (
+          CONFIG.stars.twinkleOpacityMin +
+          easedPosition *
+            (CONFIG.stars.twinkleOpacityMax - CONFIG.stars.twinkleOpacityMin)
+        );
+      }
+
+      // Render all stars on canvas
+      function renderStars() {
+        if (!starCtx || !starCanvas || !isPageVisible) {
+          // Cancel any pending animation frame on early return
+          if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+            animationFrameId = null;
+          }
+          return;
+        }
+
+        try {
+          const currentTime = performance.now();
+          const canvasWidth = starCanvas.width / window.devicePixelRatio;
+          const canvasHeight = starCanvas.height / window.devicePixelRatio;
+
+          starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
+
+          // Render stars with spectral colors
+          stars.forEach((star) => {
+            const opacity = star.isStatic
+              ? star.opacity
+              : getTwinkleOpacity(star, currentTime);
+
+            starCtx.fillStyle = `${star.color} ${opacity})`;
+            starCtx.beginPath();
+            starCtx.arc(star.x, star.y, star.size / 2, 0, Math.PI * 2);
+            starCtx.fill();
+          });
+
+          // Render planets (bright, non-twinkling)
+          planets.forEach((planet) => {
+            starCtx.fillStyle = `${planet.color} ${planet.opacity})`;
+            starCtx.beginPath();
+            starCtx.arc(planet.x, planet.y, planet.size / 2, 0, Math.PI * 2);
+            starCtx.fill();
+          });
+
+          if (isPageVisible) {
+            animationFrameId = requestAnimationFrame(renderStars);
+          }
+        } catch (error) {
+          console.error("Error in renderStars:", error);
+          // Cancel animation loop on error to prevent infinite error spam
+          if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+            animationFrameId = null;
+          }
+        }
+      }
+
+      // Initialize canvas and stars
+      function initializeStars() {
+        try {
+          starCanvas = document.getElementById("starCanvas");
+          if (!starCanvas) {
+            throw new Error("Star canvas element not found");
+          }
+
+          starCtx = starCanvas.getContext("2d");
+          if (!starCtx) {
+            throw new Error("Could not get canvas context");
+          }
+
+          // Set canvas size with device pixel ratio for sharp rendering on retina
+          // We scale the canvas buffer (width/height) by DPR, then scale context back
+          // This gives us more pixels to work with without changing coordinate system
+          const nightSky = document.getElementById("nightSky");
+          if (nightSky) {
+            const rect = nightSky.getBoundingClientRect();
+            starCanvas.width = rect.width * window.devicePixelRatio;
+            starCanvas.height = rect.height * window.devicePixelRatio;
+            // Scale context so we can use logical pixels in drawing code
+            starCtx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+            generateStars(rect.width, rect.height);
+            renderStars();
+          }
+        } catch (error) {
+          console.error("Failed to initialize stars:", error);
+        }
+      }
+
+      // Initialize night sky size and stars
+      // Use requestAnimationFrame to ensure layout is complete before initializing stars
+      initializeNightSkySize();
+
+      // Initialize CSS aurora (hide if disabled or on low-end devices)
+      const auroraContainer = document.getElementById("auroraContainer");
+      if (auroraContainer) {
+        if (!CONFIG.aurora.enabled || isLowEndDevice()) {
+          auroraContainer.style.display = "none";
+        }
+      }
+
+      requestAnimationFrame(() => {
+        initializeStars();
+      });
+
+      // Cache DOM elements with error handling
+      let meteorsContainer, heroElement, heroDiagonal;
+      let isShowerActive = false;
+      // Preset angles for consistent meteor trajectories (degrees, CSS rotation)
+      // Range: 130-165° = diagonal movement from top-right to bottom-left
+      const METEOR_ANGLES = [130, 135, 140, 145, 150, 155, 160, 165];
+      // Distance tiers create depth by varying travel distance
+      const DISTANCE_TIERS = ["short", "med", "long"];
+
+      // Meteor timeout tracking for pause/resume
+      let activeMeteorTimeouts = [];
+      let activeShowerTimeouts = [];
+
+      function initializeMeteorSystem() {
+        try {
+          meteorsContainer = document.getElementById("meteorsContainer");
+          heroElement = document.getElementsByClassName("hero")[0];
+
+          if (!meteorsContainer) {
+            throw new Error("Meteors container not found");
+          }
+          if (!heroElement) {
+            throw new Error("Hero element not found");
+          }
+
+          // Cache hero dimensions
+          const heroRect = heroElement.getBoundingClientRect();
+          const heroWidth = heroRect.width;
+          const heroHeight = heroRect.height;
+          heroDiagonal = Math.sqrt(heroWidth ** 2 + heroHeight ** 2);
+
+          return true;
+        } catch (error) {
+          console.error("Failed to initialize meteor system:", error);
+          return false;
+        }
+      }
+
+      /**
+       * Generate CSS @keyframes dynamically based on viewport size
+       *
+       * Why dynamic? Meteor travel distance depends on viewport diagonal,
+       * which varies with window size. We generate keyframes for each
+       * angle × distance combination (8 angles × 3 distances = 24 keyframes).
+       *
+       * This approach uses GPU-accelerated CSS animations instead of JS,
+       * while still being responsive to window size.
+       */
+      function generateMeteorKeyframes() {
+        try {
+          if (!heroDiagonal) {
+            console.warn("heroDiagonal not initialized");
+            return;
+          }
+
+          // Three distance tiers for visual depth (±25px from diagonal)
+          const distances = {
+            short: heroDiagonal - 25,
+            med: heroDiagonal,
+            long: heroDiagonal + 25,
+          };
+
+          let keyframesCSS = "";
+
+          METEOR_ANGLES.forEach((angle) => {
+            const radians = (angle * Math.PI) / 180;
+
+            DISTANCE_TIERS.forEach((tier) => {
+              const distance = distances[tier];
+              const endX = Math.cos(radians) * distance;
+              const endY = Math.sin(radians) * distance;
+
+              keyframesCSS += `
                             @keyframes meteor-${angle}-${tier} {
                                 0% {
                                     opacity: 0;
@@ -1267,367 +740,329 @@
                                 }
                             }
                             `;
-                        });
-                    });
+            });
+          });
 
-                    // Remove old keyframes if they exist
-                    const oldStyle =
-                        document.getElementById("meteor-keyframes");
-                    if (oldStyle) oldStyle.remove();
+          // Remove old keyframes if they exist
+          const oldStyle = document.getElementById("meteor-keyframes");
+          if (oldStyle) oldStyle.remove();
 
-                    // Add new keyframes
-                    const style = document.createElement("style");
-                    style.id = "meteor-keyframes";
-                    style.textContent = keyframesCSS;
-                    document.head.appendChild(style);
-                } catch (error) {
-                    console.error(
-                        "Failed to generate meteor keyframes:",
-                        error,
-                    );
-                }
+          // Add new keyframes
+          const style = document.createElement("style");
+          style.id = "meteor-keyframes";
+          style.textContent = keyframesCSS;
+          document.head.appendChild(style);
+        } catch (error) {
+          console.error("Failed to generate meteor keyframes:", error);
+        }
+      }
+
+      function calculateMeteorStartPosition() {
+        const startX =
+          CONFIG.meteors.startXMax -
+          Math.random() * (CONFIG.meteors.startXMax - CONFIG.meteors.startXMin);
+        let startY;
+        if (startX < 100) {
+          startY =
+            CONFIG.meteors.startYMin.whenXInBounds +
+            Math.random() *
+              (CONFIG.meteors.startYMax -
+                CONFIG.meteors.startYMin.whenXInBounds);
+        } else {
+          startY =
+            CONFIG.meteors.startYMin.whenXOutOfBounds +
+            Math.random() *
+              (CONFIG.meteors.startYMax -
+                CONFIG.meteors.startYMin.whenXOutOfBounds);
+        }
+        return { x: startX, y: startY };
+      }
+
+      function selectMeteorAngle(baseAngle = null) {
+        if (baseAngle !== null) {
+          // For meteor showers, find closest preset angle to baseAngle
+          return METEOR_ANGLES.reduce((prev, curr) =>
+            Math.abs(curr - baseAngle) < Math.abs(prev - baseAngle)
+              ? curr
+              : prev,
+          );
+        } else {
+          // Random angle from preset pool
+          return METEOR_ANGLES[
+            Math.floor(Math.random() * METEOR_ANGLES.length)
+          ];
+        }
+      }
+
+      function createMeteorElements() {
+        const meteor = document.createElement("div");
+        meteor.className = "meteor";
+
+        const head = document.createElement("div");
+        head.className = "meteor-head";
+        const tail = document.createElement("div");
+        tail.className = "meteor-tail";
+        meteor.appendChild(head);
+        meteor.appendChild(tail);
+
+        return meteor;
+      }
+
+      function selectMeteorAnimation(angle) {
+        const distanceTier =
+          DISTANCE_TIERS[Math.floor(Math.random() * DISTANCE_TIERS.length)];
+        return `meteor-${angle}-${distanceTier}`;
+      }
+
+      function createMeteor(baseAngle = null) {
+        try {
+          if (!meteorsContainer || !heroDiagonal) {
+            console.warn("Meteor system not properly initialized");
+            return;
+          }
+
+          const meteor = createMeteorElements();
+          const startPos = calculateMeteorStartPosition();
+
+          meteor.style.left = startPos.x + "%";
+          meteor.style.top = startPos.y + "%";
+
+          const angle = selectMeteorAngle(baseAngle);
+          const animationName = selectMeteorAnimation(angle);
+
+          const duration =
+            CONFIG.meteors.durationMin +
+            Math.random() *
+              (CONFIG.meteors.durationMax - CONFIG.meteors.durationMin);
+          meteor.style.animation = `${animationName} ${duration}s linear forwards`;
+
+          meteorsContainer.appendChild(meteor);
+
+          // Track cleanup timeout so it can be cleared when page is hidden
+          const cleanupTimeoutId = setTimeout(() => {
+            try {
+              // Only cleanup if page is still visible
+              // If hidden, meteors will be cleaned up on visibility change
+              if (isPageVisible && meteor.parentNode) {
+                meteor.remove();
+              }
+            } catch (cleanupError) {
+              console.warn("Error during meteor cleanup:", cleanupError);
             }
+          }, duration * 1000);
+          activeMeteorTimeouts.push(cleanupTimeoutId);
+        } catch (error) {
+          console.error("Error creating meteor:", error);
+        }
+      }
 
-            function calculateMeteorStartPosition() {
-                const startX =
-                    CONFIG.meteors.startXMax -
-                    Math.random() *
-                        (CONFIG.meteors.startXMax - CONFIG.meteors.startXMin);
-                let startY;
-                if (startX < 100) {
-                    startY =
-                        CONFIG.meteors.startYMin.whenXInBounds +
-                        Math.random() *
-                            (CONFIG.meteors.startYMax -
-                                CONFIG.meteors.startYMin.whenXInBounds);
-                } else {
-                    startY =
-                        CONFIG.meteors.startYMin.whenXOutOfBounds +
-                        Math.random() *
-                            (CONFIG.meteors.startYMax -
-                                CONFIG.meteors.startYMin.whenXOutOfBounds);
-                }
-                return { x: startX, y: startY };
-            }
+      function triggerMeteorShower() {
+        if (isShowerActive || !isPageVisible) return;
 
-            function selectMeteorAngle(baseAngle = null) {
-                if (baseAngle !== null) {
-                    // For meteor showers, find closest preset angle to baseAngle
-                    return METEOR_ANGLES.reduce((prev, curr) =>
-                        Math.abs(curr - baseAngle) < Math.abs(prev - baseAngle)
-                            ? curr
-                            : prev,
-                    );
-                } else {
-                    // Random angle from preset pool
-                    return METEOR_ANGLES[
-                        Math.floor(Math.random() * METEOR_ANGLES.length)
-                    ];
-                }
-            }
+        isShowerActive = true;
+        const showerAngle =
+          CONFIG.meteors.angleMin +
+          Math.random() * (CONFIG.meteors.angleMax - CONFIG.meteors.angleMin);
+        const numMeteors =
+          CONFIG.meteors.showerCountMin +
+          Math.floor(
+            Math.random() *
+              (CONFIG.meteors.showerCountMax -
+                CONFIG.meteors.showerCountMin +
+                1),
+          );
 
-            function createMeteorElements() {
-                const meteor = document.createElement("div");
-                meteor.className = "meteor";
+        for (let i = 0; i < numMeteors; i++) {
+          const timeoutId = setTimeout(
+            () => {
+              if (isPageVisible) createMeteor(showerAngle);
+            },
+            i *
+              (CONFIG.meteors.showerIntervalMin +
+                Math.random() *
+                  (CONFIG.meteors.showerIntervalMax -
+                    CONFIG.meteors.showerIntervalMin)),
+          );
+          activeShowerTimeouts.push(timeoutId);
+        }
 
-                const head = document.createElement("div");
-                head.className = "meteor-head";
-                const tail = document.createElement("div");
-                tail.className = "meteor-tail";
-                meteor.appendChild(head);
-                meteor.appendChild(tail);
+        const cleanupTimeoutId = setTimeout(
+          () => {
+            isShowerActive = false;
+            scheduleNextShower();
+          },
+          numMeteors * CONFIG.meteors.showerCleanupDelayPerMeteor +
+            CONFIG.meteors.showerCleanupDelayBase,
+        );
+        activeShowerTimeouts.push(cleanupTimeoutId);
+      }
 
-                return meteor;
-            }
+      function scheduleNextShower() {
+        if (!isPageVisible) return;
+        const nextShowerIn =
+          CONFIG.meteors.nextShowerMin +
+          Math.random() *
+            (CONFIG.meteors.nextShowerMax - CONFIG.meteors.nextShowerMin);
+        const timeoutId = setTimeout(triggerMeteorShower, nextShowerIn);
+        activeShowerTimeouts.push(timeoutId);
+      }
 
-            function selectMeteorAnimation(angle) {
-                const distanceTier =
-                    DISTANCE_TIERS[
-                        Math.floor(Math.random() * DISTANCE_TIERS.length)
-                    ];
-                return `meteor-${angle}-${distanceTier}`;
-            }
+      function createSingleMeteor() {
+        if (!isPageVisible) return;
+        createMeteor();
+        const nextMeteorIn =
+          CONFIG.meteors.singleMeteorIntervalMin +
+          Math.random() *
+            (CONFIG.meteors.singleMeteorIntervalMax -
+              CONFIG.meteors.singleMeteorIntervalMin);
+        const timeoutId = setTimeout(createSingleMeteor, nextMeteorIn);
+        activeMeteorTimeouts.push(timeoutId);
+      }
 
-            function createMeteor(baseAngle = null) {
-                try {
-                    if (!meteorsContainer || !heroDiagonal) {
-                        console.warn("Meteor system not properly initialized");
-                        return;
-                    }
+      // Initialize meteor system and start animations
+      if (initializeMeteorSystem()) {
+        // Generate keyframes once
+        generateMeteorKeyframes();
 
-                    const meteor = createMeteorElements();
-                    const startPos = calculateMeteorStartPosition();
+        // Track current star count for breakpoint detection
+        let currentStarCount = getStarCount();
 
-                    meteor.style.left = startPos.x + "%";
-                    meteor.style.top = startPos.y + "%";
+        // Add resize listener with debouncing
+        let resizeTimeout;
+        window.addEventListener("resize", () => {
+          clearTimeout(resizeTimeout);
+          resizeTimeout = setTimeout(() => {
+            // Update night sky size
+            initializeNightSkySize();
 
-                    const angle = selectMeteorAngle(baseAngle);
-                    const animationName = selectMeteorAnimation(angle);
+            // Update canvas size with device pixel ratio
+            if (starCanvas && starCtx) {
+              const nightSky = document.getElementById("nightSky");
+              if (nightSky) {
+                const rect = nightSky.getBoundingClientRect();
+                starCanvas.width = rect.width * window.devicePixelRatio;
+                starCanvas.height = rect.height * window.devicePixelRatio;
+                starCtx.scale(window.devicePixelRatio, window.devicePixelRatio);
 
-                    const duration =
-                        CONFIG.meteors.durationMin +
-                        Math.random() *
-                            (CONFIG.meteors.durationMax -
-                                CONFIG.meteors.durationMin);
-                    meteor.style.animation = `${animationName} ${duration}s linear forwards`;
-
-                    meteorsContainer.appendChild(meteor);
-
-                    // Track cleanup timeout so it can be cleared when page is hidden
-                    const cleanupTimeoutId = setTimeout(() => {
-                        try {
-                            // Only cleanup if page is still visible
-                            // If hidden, meteors will be cleaned up on visibility change
-                            if (isPageVisible && meteor.parentNode) {
-                                meteor.remove();
-                            }
-                        } catch (cleanupError) {
-                            console.warn(
-                                "Error during meteor cleanup:",
-                                cleanupError,
-                            );
-                        }
-                    }, duration * 1000);
-                    activeMeteorTimeouts.push(cleanupTimeoutId);
-                } catch (error) {
-                    console.error("Error creating meteor:", error);
-                }
-            }
-
-            function triggerMeteorShower() {
-                if (isShowerActive || !isPageVisible) return;
-
-                isShowerActive = true;
-                const showerAngle =
-                    CONFIG.meteors.angleMin +
-                    Math.random() *
-                        (CONFIG.meteors.angleMax - CONFIG.meteors.angleMin);
-                const numMeteors =
-                    CONFIG.meteors.showerCountMin +
-                    Math.floor(
-                        Math.random() *
-                            (CONFIG.meteors.showerCountMax -
-                                CONFIG.meteors.showerCountMin +
-                                1),
-                    );
-
-                for (let i = 0; i < numMeteors; i++) {
-                    const timeoutId = setTimeout(
-                        () => {
-                            if (isPageVisible) createMeteor(showerAngle);
-                        },
-                        i *
-                            (CONFIG.meteors.showerIntervalMin +
-                                Math.random() *
-                                    (CONFIG.meteors.showerIntervalMax -
-                                        CONFIG.meteors.showerIntervalMin)),
-                    );
-                    activeShowerTimeouts.push(timeoutId);
-                }
-
-                const cleanupTimeoutId = setTimeout(
-                    () => {
-                        isShowerActive = false;
-                        scheduleNextShower();
-                    },
-                    numMeteors * CONFIG.meteors.showerCleanupDelayPerMeteor +
-                        CONFIG.meteors.showerCleanupDelayBase,
-                );
-                activeShowerTimeouts.push(cleanupTimeoutId);
-            }
-
-            function scheduleNextShower() {
-                if (!isPageVisible) return;
-                const nextShowerIn =
-                    CONFIG.meteors.nextShowerMin +
-                    Math.random() *
-                        (CONFIG.meteors.nextShowerMax -
-                            CONFIG.meteors.nextShowerMin);
-                const timeoutId = setTimeout(triggerMeteorShower, nextShowerIn);
-                activeShowerTimeouts.push(timeoutId);
-            }
-
-            function createSingleMeteor() {
-                if (!isPageVisible) return;
-                createMeteor();
-                const nextMeteorIn =
-                    CONFIG.meteors.singleMeteorIntervalMin +
-                    Math.random() *
-                        (CONFIG.meteors.singleMeteorIntervalMax -
-                            CONFIG.meteors.singleMeteorIntervalMin);
-                const timeoutId = setTimeout(createSingleMeteor, nextMeteorIn);
-                activeMeteorTimeouts.push(timeoutId);
-            }
-
-            // Initialize meteor system and start animations
-            if (initializeMeteorSystem()) {
-                // Generate keyframes once
-                generateMeteorKeyframes();
-
-                // Track current star count for breakpoint detection
-                let currentStarCount = getStarCount();
-
-                // Add resize listener with debouncing
-                let resizeTimeout;
-                window.addEventListener("resize", () => {
-                    clearTimeout(resizeTimeout);
-                    resizeTimeout = setTimeout(() => {
-                        // Update night sky size
-                        initializeNightSkySize();
-
-                        // Update canvas size with device pixel ratio
-                        if (starCanvas && starCtx) {
-                            const nightSky =
-                                document.getElementById("nightSky");
-                            if (nightSky) {
-                                const rect = nightSky.getBoundingClientRect();
-                                starCanvas.width =
-                                    rect.width * window.devicePixelRatio;
-                                starCanvas.height =
-                                    rect.height * window.devicePixelRatio;
-                                starCtx.scale(
-                                    window.devicePixelRatio,
-                                    window.devicePixelRatio,
-                                );
-
-                                // Check if we crossed the mobile breakpoint
-                                const newStarCount = getStarCount();
-                                if (newStarCount !== currentStarCount) {
-                                    currentStarCount = newStarCount;
-                                }
-
-                                // Regenerate stars with new canvas size
-                                generateStars(rect.width, rect.height);
-                            }
-                        }
-
-                        // Update meteor system
-                        if (heroElement) {
-                            const heroRect =
-                                heroElement.getBoundingClientRect();
-                            const heroWidth = heroRect.width;
-                            const heroHeight = heroRect.height;
-                            heroDiagonal = Math.sqrt(
-                                heroWidth ** 2 + heroHeight ** 2,
-                            );
-                            generateMeteorKeyframes();
-                        }
-                    }, CONFIG.performance.resizeDebounceMs);
-                });
-
-                /**
-                 * Visibility change handler for pause/resume
-                 *
-                 * When tab is hidden:
-                 * - Pause all CSS animations (.paused class)
-                 * - Stop canvas rendering (cancelAnimationFrame)
-                 * - Clear all meteor timeouts to prevent memory leaks
-                 *
-                 * When tab becomes visible:
-                 * - Resume CSS animations
-                 * - Restart canvas rendering
-                 * - Clean up any orphaned meteor DOM elements
-                 * - Recreate meteor/shower timers from scratch
-                 *
-                 * This prevents unnecessary CPU/GPU usage when tab is hidden
-                 * and ensures animations don't desync after long periods hidden.
-                 */
-                document.addEventListener("visibilitychange", () => {
-                    const nightSky = document.getElementById("nightSky");
-                    const meteorsContainer =
-                        document.getElementById("meteorsContainer");
-                    const auroraContainer =
-                        document.getElementById("auroraContainer");
-
-                    if (document.hidden) {
-                        // Page is hidden - pause animations
-                        isPageVisible = false;
-                        if (nightSky) nightSky.classList.add("paused");
-                        if (meteorsContainer)
-                            meteorsContainer.classList.add("paused");
-                        if (auroraContainer)
-                            auroraContainer.classList.add("paused");
-
-                        // Cancel canvas rendering
-                        if (animationFrameId) {
-                            cancelAnimationFrame(animationFrameId);
-                            animationFrameId = null;
-                        }
-
-                        // Clear all pending meteor timeouts
-                        activeMeteorTimeouts.forEach(clearTimeout);
-                        activeShowerTimeouts.forEach(clearTimeout);
-                        activeMeteorTimeouts = [];
-                        activeShowerTimeouts = [];
-                    } else {
-                        // Page is visible - resume animations
-                        isPageVisible = true;
-                        if (nightSky) nightSky.classList.remove("paused");
-                        if (meteorsContainer)
-                            meteorsContainer.classList.remove("paused");
-                        if (auroraContainer)
-                            auroraContainer.classList.remove("paused");
-
-                        // Reset shower state since all timeouts were cleared when hidden
-                        isShowerActive = false;
-
-                        // Clean up old meteors whose cleanup timeouts were cleared
-                        if (meteorsContainer) {
-                            const oldMeteors =
-                                meteorsContainer.querySelectorAll(".meteor");
-                            oldMeteors.forEach((meteor) => meteor.remove());
-                        }
-
-                        // Resume canvas rendering
-                        if (!animationFrameId) {
-                            renderStars();
-                        }
-
-                        // Restart meteor creation
-                        // Restart single meteors
-                        for (
-                            let i = 0;
-                            i < CONFIG.meteors.singleMeteorStreamCount;
-                            i++
-                        ) {
-                            setTimeout(
-                                createSingleMeteor,
-                                Math.random() *
-                                    CONFIG.meteors.initialMeteorDelayMax,
-                            );
-                        }
-                        // Restart showers
-                        setTimeout(
-                            triggerMeteorShower,
-                            CONFIG.meteors.initialShowerDelayMin +
-                                Math.random() *
-                                    (CONFIG.meteors.initialShowerDelayMax -
-                                        CONFIG.meteors.initialShowerDelayMin),
-                        );
-                    }
-                });
-
-                // Start scattered single meteors
-                for (
-                    let i = 0;
-                    i < CONFIG.meteors.singleMeteorStreamCount;
-                    i++
-                ) {
-                    setTimeout(
-                        createSingleMeteor,
-                        Math.random() * CONFIG.meteors.initialMeteorDelayMax,
-                    );
+                // Check if we crossed the mobile breakpoint
+                const newStarCount = getStarCount();
+                if (newStarCount !== currentStarCount) {
+                  currentStarCount = newStarCount;
                 }
 
-                // Start first meteor shower
-                setTimeout(
-                    triggerMeteorShower,
-                    CONFIG.meteors.initialShowerDelayMin +
-                        Math.random() *
-                            (CONFIG.meteors.initialShowerDelayMax -
-                                CONFIG.meteors.initialShowerDelayMin),
-                );
+                // Regenerate stars with new canvas size
+                generateStars(rect.width, rect.height);
+              }
             }
-        </script>
-    </body>
+
+            // Update meteor system
+            if (heroElement) {
+              const heroRect = heroElement.getBoundingClientRect();
+              const heroWidth = heroRect.width;
+              const heroHeight = heroRect.height;
+              heroDiagonal = Math.sqrt(heroWidth ** 2 + heroHeight ** 2);
+              generateMeteorKeyframes();
+            }
+          }, CONFIG.performance.resizeDebounceMs);
+        });
+
+        /**
+         * Visibility change handler for pause/resume
+         *
+         * When tab is hidden:
+         * - Pause all CSS animations (.paused class)
+         * - Stop canvas rendering (cancelAnimationFrame)
+         * - Clear all meteor timeouts to prevent memory leaks
+         *
+         * When tab becomes visible:
+         * - Resume CSS animations
+         * - Restart canvas rendering
+         * - Clean up any orphaned meteor DOM elements
+         * - Recreate meteor/shower timers from scratch
+         *
+         * This prevents unnecessary CPU/GPU usage when tab is hidden
+         * and ensures animations don't desync after long periods hidden.
+         */
+        document.addEventListener("visibilitychange", () => {
+          const nightSky = document.getElementById("nightSky");
+          const meteorsContainer = document.getElementById("meteorsContainer");
+          const auroraContainer = document.getElementById("auroraContainer");
+
+          if (document.hidden) {
+            // Page is hidden - pause animations
+            isPageVisible = false;
+            if (nightSky) nightSky.classList.add("paused");
+            if (meteorsContainer) meteorsContainer.classList.add("paused");
+            if (auroraContainer) auroraContainer.classList.add("paused");
+
+            // Cancel canvas rendering
+            if (animationFrameId) {
+              cancelAnimationFrame(animationFrameId);
+              animationFrameId = null;
+            }
+
+            // Clear all pending meteor timeouts
+            activeMeteorTimeouts.forEach(clearTimeout);
+            activeShowerTimeouts.forEach(clearTimeout);
+            activeMeteorTimeouts = [];
+            activeShowerTimeouts = [];
+          } else {
+            // Page is visible - resume animations
+            isPageVisible = true;
+            if (nightSky) nightSky.classList.remove("paused");
+            if (meteorsContainer) meteorsContainer.classList.remove("paused");
+            if (auroraContainer) auroraContainer.classList.remove("paused");
+
+            // Reset shower state since all timeouts were cleared when hidden
+            isShowerActive = false;
+
+            // Clean up old meteors whose cleanup timeouts were cleared
+            if (meteorsContainer) {
+              const oldMeteors = meteorsContainer.querySelectorAll(".meteor");
+              oldMeteors.forEach((meteor) => meteor.remove());
+            }
+
+            // Resume canvas rendering
+            if (!animationFrameId) {
+              renderStars();
+            }
+
+            // Restart meteor creation
+            // Restart single meteors
+            for (let i = 0; i < CONFIG.meteors.singleMeteorStreamCount; i++) {
+              setTimeout(
+                createSingleMeteor,
+                Math.random() * CONFIG.meteors.initialMeteorDelayMax,
+              );
+            }
+            // Restart showers
+            setTimeout(
+              triggerMeteorShower,
+              CONFIG.meteors.initialShowerDelayMin +
+                Math.random() *
+                  (CONFIG.meteors.initialShowerDelayMax -
+                    CONFIG.meteors.initialShowerDelayMin),
+            );
+          }
+        });
+
+        // Start scattered single meteors
+        for (let i = 0; i < CONFIG.meteors.singleMeteorStreamCount; i++) {
+          setTimeout(
+            createSingleMeteor,
+            Math.random() * CONFIG.meteors.initialMeteorDelayMax,
+          );
+        }
+
+        // Start first meteor shower
+        setTimeout(
+          triggerMeteorShower,
+          CONFIG.meteors.initialShowerDelayMin +
+            Math.random() *
+              (CONFIG.meteors.initialShowerDelayMax -
+                CONFIG.meteors.initialShowerDelayMin),
+        );
+      }
+    </script>
+  </body>
 </html>

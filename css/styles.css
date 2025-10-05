@@ -1,0 +1,502 @@
+/* ============================================================
+   CSS VARIABLES - Configuration
+   Lines: 1-53, Purpose: Centralized design tokens and config values
+   ============================================================ */
+
+:root {
+  --font-mono:
+    monospace, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+
+  /* Curved horizon configuration */
+  --horizon-overlap: -12px; /* Content overlap with hero section */
+  --horizon-svg-top: -1px; /* Fine-tune SVG position */
+  --horizon-svg-height: 22px; /* SVG container height */
+  --horizon-stroke-base: 1px; /* Thin stroke for edges */
+  --horizon-stroke-glow: 1.5px; /* Thicker stroke for center */
+  --horizon-edge-opacity: 0.25; /* Opacity at far edges */
+  --horizon-center-opacity: 0.8; /* Opacity at center */
+}
+
+/* ============================================================
+   BASE STYLES - Reset and body
+   Lines: 54-68, Purpose: Global resets and base layout
+   ============================================================ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #0a0a1a;
+  color: white;
+  font-family: var(--font-mono);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ============================================================
+   HERO SECTION - Night sky container
+   Lines: 69-127, Purpose: Main hero area with gradient background
+   ============================================================ */
+
+.hero {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    to bottom,
+    #0a0a1a 0%,
+    #0d0d24 40%,
+    #12152e 85%,
+    #1a1e32 100%
+  );
+}
+
+.night-sky {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  /* Width, height, and bottom offset set dynamically by JavaScript */
+  transform-origin: 50% 50%;
+  animation: rotateSky 900s linear infinite;
+  will-change: transform;
+  transform: translate3d(-50%, 0, 0);
+  contain: layout style paint;
+}
+
+#starCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes rotateSky {
+  from {
+    transform: translate3d(-50%, 0, 0) rotate(0deg);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0) rotate(360deg);
+  }
+}
+
+.paused {
+  animation-play-state: paused !important;
+}
+
+.paused * {
+  animation-play-state: paused !important;
+}
+
+.aurora-container.paused .aurora-band {
+  animation-play-state: paused !important;
+}
+
+/* ============================================================
+   METEOR EFFECTS - DOM-based meteor trails
+   Lines: 128-172, Purpose: Meteor container and animation styles
+   ============================================================ */
+
+.meteors-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+  contain: layout style paint;
+}
+
+.meteor {
+  position: absolute;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.meteor-head {
+  width: 4px;
+  height: 4px;
+  background: radial-gradient(circle, white, rgba(255, 255, 255, 0.8));
+  border-radius: 50%;
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.6);
+}
+
+.meteor-tail {
+  position: absolute;
+  top: 50%;
+  left: -70px;
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 200, 150, 0.2) 30%,
+    rgba(255, 220, 180, 0.4) 70%,
+    transparent 95%
+  );
+  transform: translateY(-50%);
+  filter: blur(0.5px);
+}
+
+/* ============================================================
+   AURORA EFFECTS - CSS gradient animations
+   Lines: 173-407, Purpose: Aurora borealis visual effect
+   ============================================================ */
+
+.aurora-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 25vh;
+  pointer-events: none;
+  z-index: 1;
+  overflow: visible;
+  mask-image: linear-gradient(to top, black 0%, black 40%, transparent 100%);
+  -webkit-mask-image: linear-gradient(
+    to top,
+    black 0%,
+    black 40%,
+    transparent 100%
+  );
+}
+
+.aurora-band {
+  position: absolute;
+  bottom: 0;
+  left: -10%;
+  width: 120%;
+  height: 100%;
+  opacity: 0.15;
+  will-change: transform, opacity, filter;
+  mix-blend-mode: screen;
+  filter: blur(35px);
+}
+
+@media (max-width: 768px) {
+  .aurora-band {
+    filter: blur(15px);
+  }
+}
+
+.aurora-band-1 {
+  background:
+    radial-gradient(
+      ellipse 22% 155% at 3% 50%,
+      rgba(100, 255, 180, 0.35) 0%,
+      rgba(100, 255, 180, 0.14) 42%,
+      transparent 72%
+    ),
+    radial-gradient(
+      ellipse 25% 150% at 22% 50%,
+      rgba(80, 255, 150, 0.38) 0%,
+      rgba(80, 255, 150, 0.16) 40%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 30% 140% at 48% 50%,
+      rgba(120, 255, 200, 0.36) 0%,
+      rgba(120, 255, 200, 0.15) 35%,
+      transparent 65%
+    ),
+    radial-gradient(
+      ellipse 28% 160% at 75% 50%,
+      rgba(90, 255, 170, 0.32) 0%,
+      rgba(90, 255, 170, 0.13) 38%,
+      transparent 68%
+    ),
+    radial-gradient(
+      ellipse 24% 148% at 95% 50%,
+      rgba(110, 255, 190, 0.34) 0%,
+      rgba(110, 255, 190, 0.14) 40%,
+      transparent 70%
+    );
+  animation:
+    auroraWave1 25s ease-in-out infinite,
+    auroraShimmer1 15s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+.aurora-band-2 {
+  background:
+    radial-gradient(
+      ellipse 26% 150% at 8% 50%,
+      rgba(0, 255, 200, 0.3) 0%,
+      rgba(0, 255, 200, 0.12) 40%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 32% 155% at 32% 50%,
+      rgba(20, 255, 220, 0.32) 0%,
+      rgba(20, 255, 220, 0.13) 42%,
+      transparent 72%
+    ),
+    radial-gradient(
+      ellipse 28% 145% at 62% 50%,
+      rgba(40, 255, 210, 0.3) 0%,
+      rgba(40, 255, 210, 0.12) 38%,
+      transparent 68%
+    ),
+    radial-gradient(
+      ellipse 26% 135% at 90% 50%,
+      rgba(30, 255, 215, 0.28) 0%,
+      rgba(30, 255, 215, 0.11) 40%,
+      transparent 70%
+    );
+  animation:
+    auroraWave2 30s ease-in-out infinite,
+    auroraShimmer2 18s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+.aurora-band-3 {
+  background:
+    radial-gradient(
+      ellipse 25% 145% at 5% 50%,
+      rgba(150, 255, 100, 0.28) 0%,
+      rgba(150, 255, 100, 0.11) 40%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 24% 138% at 18% 50%,
+      rgba(180, 255, 130, 0.26) 0%,
+      rgba(180, 255, 130, 0.1) 42%,
+      transparent 72%
+    ),
+    radial-gradient(
+      ellipse 30% 148% at 42% 50%,
+      rgba(140, 255, 110, 0.3) 0%,
+      rgba(140, 255, 110, 0.12) 40%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 27% 142% at 68% 50%,
+      rgba(160, 255, 120, 0.28) 0%,
+      rgba(160, 255, 120, 0.11) 38%,
+      transparent 68%
+    ),
+    radial-gradient(
+      ellipse 26% 150% at 92% 50%,
+      rgba(170, 255, 125, 0.29) 0%,
+      rgba(170, 255, 125, 0.115) 40%,
+      transparent 70%
+    );
+  animation:
+    auroraWave3 35s ease-in-out infinite,
+    auroraShimmer3 20s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+@keyframes auroraWave1 {
+  0%,
+  100% {
+    transform: translateX(0%) scaleX(1) scaleY(1) skewX(0deg) rotate(0deg);
+  }
+  25% {
+    transform: translateX(-5%) scaleX(1.08) scaleY(0.95) skewX(-2deg)
+      rotate(-1deg);
+  }
+  50% {
+    transform: translateX(3%) scaleX(0.95) scaleY(1.05) skewX(1deg)
+      rotate(0.5deg);
+  }
+  75% {
+    transform: translateX(4%) scaleX(1.02) scaleY(0.98) skewX(2deg) rotate(1deg);
+  }
+}
+
+@keyframes auroraWave2 {
+  0%,
+  100% {
+    transform: translateX(0%) scaleX(1) scaleY(1) skewX(0deg) rotate(0deg);
+  }
+  30% {
+    transform: translateX(6%) scaleX(0.96) scaleY(1.04) skewX(3deg)
+      rotate(1.5deg);
+  }
+  60% {
+    transform: translateX(-4%) scaleX(1.05) scaleY(0.97) skewX(-1deg)
+      rotate(-0.5deg);
+  }
+  90% {
+    transform: translateX(2%) scaleX(1) scaleY(1) skewX(1deg) rotate(0.5deg);
+  }
+}
+
+@keyframes auroraWave3 {
+  0%,
+  100% {
+    transform: translateX(0%) scaleX(1) scaleY(1) skewX(0deg) rotate(0deg);
+  }
+  33% {
+    transform: translateX(-6%) scaleX(1.06) scaleY(1.02) skewX(-3deg)
+      rotate(-1.5deg);
+  }
+  66% {
+    transform: translateX(5%) scaleX(0.94) scaleY(0.96) skewX(2deg) rotate(1deg);
+  }
+}
+
+@keyframes auroraShimmer1 {
+  0%,
+  100% {
+    opacity: 0.12;
+  }
+  50% {
+    opacity: 0.18;
+  }
+}
+
+@keyframes auroraShimmer2 {
+  0%,
+  100% {
+    opacity: 0.13;
+  }
+  50% {
+    opacity: 0.17;
+  }
+}
+
+@keyframes auroraShimmer3 {
+  0%,
+  100% {
+    opacity: 0.14;
+  }
+  50% {
+    opacity: 0.16;
+  }
+}
+
+/* ============================================================
+   LOGO - Hero text branding
+   Lines: 408-423, Purpose: Main logo text styling
+   ============================================================ */
+
+.logo-container {
+  text-align: center;
+  max-width: 1200px;
+  width: 100%;
+  position: relative;
+  z-index: 3;
+}
+
+.logo-text {
+  font-size: clamp(60px, 15vw, 180px);
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+  display: block;
+}
+
+/* ============================================================
+   CONTENT SECTION - Below hero fold
+   Lines: 424-506, Purpose: Main content area with curved top edge
+   ============================================================ */
+
+.content {
+  position: relative;
+  clip-path: url(#contentCurveClip);
+  margin-top: var(--horizon-overlap);
+  background: linear-gradient(
+    to bottom,
+    #1f2238 0%,
+    #282a38 30%,
+    #2d2f3a 70%,
+    #2d2f3a 100%
+  );
+  padding: 40px 20px 60px;
+  z-index: 4;
+}
+
+.horizon-overlay {
+  position: absolute;
+  top: var(--horizon-svg-top);
+  left: 0;
+  width: 100%;
+  height: var(--horizon-svg-height);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.content-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.right-content p {
+  font-family: var(--font-mono);
+  font-size: clamp(18px, 2.5vw, 24px);
+  line-height: 1.1;
+  text-align: right;
+}
+
+.left-content p {
+  font-family: var(--font-mono);
+  font-size: clamp(18px, 2.5vw, 24px);
+  line-height: 1.6;
+  text-align: left;
+}
+
+.contact {
+  font-size: 16px;
+  line-height: 1.8;
+  margin-top: 30px;
+}
+
+.contact strong {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.contact a {
+  color: white;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  transition: border-color 0.3s;
+}
+
+.contact a:hover {
+  border-bottom-color: white;
+}
+
+.left-content a {
+  color: white;
+  text-decoration: none;
+  position: relative;
+  transition: color 0.3s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.left-content a:hover {
+  color: rgba(255, 255, 255, 0.8);
+  border-bottom-color: rgba(255, 255, 255, 0.6);
+}
+
+/* ============================================================
+   RESPONSIVE - Mobile adjustments
+   Lines: 507-517, Purpose: Mobile breakpoint styles
+   ============================================================ */
+
+@media (max-width: 768px) {
+  .content-wrapper {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .logo-text {
+    letter-spacing: 0;
+  }
+}
