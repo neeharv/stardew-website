@@ -87,27 +87,36 @@
       </defs>
     </svg>
 
-    <div class="hero">
-      <div class="night-sky" id="nightSky">
-        <canvas id="starCanvas"></canvas>
+    <div class="hero" data-component="hero">
+      <div class="night-sky" id="nightSky" data-component="night-sky">
+        <canvas id="starCanvas" data-component="star-canvas"></canvas>
       </div>
-      <div class="aurora-container" id="auroraContainer">
+      <div
+        class="aurora-container"
+        id="auroraContainer"
+        data-component="aurora"
+      >
         <div class="aurora-band aurora-band-1"></div>
         <div class="aurora-band aurora-band-2"></div>
         <div class="aurora-band aurora-band-3"></div>
       </div>
-      <div class="meteors-container" id="meteorsContainer"></div>
-      <div class="logo-container">
+      <div
+        class="meteors-container"
+        id="meteorsContainer"
+        data-component="meteors"
+      ></div>
+      <div class="logo-container" data-component="logo">
         <div class="logo-text">STARDEW LABS</div>
       </div>
     </div>
 
-    <div class="content">
+    <div class="content" data-component="content">
       <svg
         class="horizon-overlay"
         viewBox="0 0 1200 22"
         preserveAspectRatio="none"
         xmlns="http://www.w3.org/2000/svg"
+        data-component="horizon"
       >
         <!-- Thin stroke for edges -->
         <path
