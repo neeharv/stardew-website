@@ -228,7 +228,7 @@ export function renderStars() {
         ? star.opacity
         : getTwinkleOpacity(star, currentTime);
 
-      starCtx.fillStyle = `${star.color} ${opacity})`;
+      starCtx.fillStyle = `${star.color}${opacity})`;
       starCtx.beginPath();
       starCtx.arc(star.x, star.y, star.size / 2, 0, Math.PI * 2);
       starCtx.fill();
@@ -236,7 +236,7 @@ export function renderStars() {
 
     // Render planets (bright, non-twinkling)
     planets.forEach((planet) => {
-      starCtx.fillStyle = `${planet.color} ${planet.opacity})`;
+      starCtx.fillStyle = `${planet.color}${planet.opacity})`;
       starCtx.beginPath();
       starCtx.arc(planet.x, planet.y, planet.size / 2, 0, Math.PI * 2);
       starCtx.fill();

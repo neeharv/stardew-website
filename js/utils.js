@@ -134,7 +134,7 @@ export function initializeNightSkySize() {
     // Apply dimensions and position center at horizon
     nightSky.style.width = `${containerSize}px`;
     nightSky.style.height = `${containerSize}px`;
-    nightSky.style.bottom = `${-containerSize / CONFIG.nightSky.bottomOffsetFactor}px`;
+    nightSky.style.bottom = `${-containerSize * CONFIG.nightSky.bottomOffsetFactor}px`;
   } catch (error) {
     console.error("Failed to initialize night sky size:", error);
   }
