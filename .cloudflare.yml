@@ -1,0 +1,16 @@
+# Cloudflare Pages Configuration
+# Optimizations are enabled by default, but explicitly documented here for clarity
+
+# Asset optimization settings
+optimization:
+  minify:
+    # Minify JavaScript files (reduces file size by ~30-40%)
+    js: true
+    # Minify CSS files (reduces file size by ~20-30%)
+    css: true
+    # Minify HTML files (reduces file size by ~10-15%)
+    html: true
+
+  # Auto Minify is enabled by default on Cloudflare Pages
+  # Brotli compression is automatically applied for supported browsers
+  # HTTP/2 is enabled by default for multiplexed parallel downloads
